@@ -11,8 +11,7 @@ import java.util.Optional;
 public interface UserRepository extends CrudRepository<User, Long> {
     List<User> findAll();
     Optional<User> findById(Long id);
-    Optional<User> findByUsernameAndPassword(String username, String password);
     @Query("SELECT u FROM User u WHERE u.username = :username and u.password = :password")
-
+    Optional<User> findByUsernameAndPassword(String username, String password);
     void deleteById(Long id);
 }
