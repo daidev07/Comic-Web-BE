@@ -1,10 +1,12 @@
 package com.example.comicwebbe.service;
 
+import com.example.comicwebbe.entity.Category;
 import com.example.comicwebbe.entity.StoryCategory;
 import com.example.comicwebbe.repository.StoryCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,4 +23,8 @@ public class StoryCategoryService {
     public void findById(Long id) {
         storyCategoryRepository.findById(id);
     }
+    public void deleteStoryCateByStoryId(Long storyId) {
+        storyCategoryRepository.deleteStoryCategoryByStoryId(storyId);
+    }
+
 }

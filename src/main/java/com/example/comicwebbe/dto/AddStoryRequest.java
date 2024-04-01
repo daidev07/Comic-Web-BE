@@ -8,7 +8,6 @@ import java.util.List;
 
 @Data
 public class AddStoryRequest {
-    private Long id;
     private String ten;
     private String avt;
     private String gioithieu;

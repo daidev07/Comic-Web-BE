@@ -8,6 +8,7 @@ import com.example.comicwebbe.entity.StoryCategory;
 import com.example.comicwebbe.repository.CategoryRepository;
 import com.example.comicwebbe.repository.StoryRepository;
 import com.example.comicwebbe.repository.StoryCategoryRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,13 +27,19 @@ public class StoryService {
     public List<Story> getAllTruyen() {
         return storyRepository.findAll();
     }
+
+    @Transactional
+    public void deleteStoryAndRelatedCategories(Long storyId) {
+        storyCategoryRepository.deleteStoryCategoryByStoryId(storyId);
+        // Sau đó xóa truyện từ bảng Story
+        storyRepository.deleteById(storyId);
+    }
     public void deleteById(Long id){
         storyRepository.deleteById(id);
     }
     public void findById(Long id) {
         storyRepository.findById(id);
     }
-
 //    CRUD Story
     public void addStory (AddStoryRequest addStoryRequest){
         String base64Content = addStoryRequest.getAvt();
@@ -61,22 +68,34 @@ public class StoryService {
     }
 
     public void updateStory (UpdateStoryRequest updateStoryRequest){
-        try {
-            String base64Content = updateStoryRequest.getAvt();
-            byte[] avt = Base64.getDecoder().decode(base64Content);
+        String base64Content = updateStoryRequest.getAvt();
+        byte[] avt = Base64.getDecoder().decode(base64Content);
 
-            Story story = new Story();
-            story.setTen(updateStoryRequest.getTen());
-            story.setAvt(avt);
-            story.setGioithieu(updateStoryRequest.getGioithieu());
-            story.setTacgia(updateStoryRequest.getTacgia());
-            story.setView(updateStoryRequest.getView());
+        Story story = new Story();
+        story.setId(updateStoryRequest.getId());
+        story.setTen(updateStoryRequest.getTen());
+        story.setAvt(avt);
+        story.setGioithieu(updateStoryRequest.getGioithieu());
+        story.setTacgia(updateStoryRequest.getTacgia());
+        story.setView(updateStoryRequest.getView());
 
-            storyRepository.save(story);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Internal Server Error");
+        Story newStory = storyRepository.save(story);
+
+        for (Long idTheLoai : updateStoryRequest.getIdTheLoais()) {
+            // Kiểm tra xem thể loại có tồn tại không
+            Optional<Category> cateOptional = categoryRepository.findById(idTheLoai);
+            if (cateOptional.isPresent()) {
+                StoryCategory storyCategory = new StoryCategory(newStory.getId(), idTheLoai);
+                storyCategoryRepository.save(storyCategory);
+            } else {
+                // Xử lý khi thể loại không tồn tại
+                throw new RuntimeException("Thể loại không tồn tại: " + idTheLoai);
+            }
         }
     }
+    public List<Category> getCategoriesForStory(Long storyId) {
+        return storyCategoryRepository.findCategoriesByStoryId(storyId);
+    }
+
 
 }

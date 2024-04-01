@@ -6,6 +6,7 @@ import org.attoparser.dom.Text;
 
 import java.awt.*;
 import java.sql.Blob;
+import java.util.List;
 
 @Data
 public class UpdateStoryRequest {
@@ -14,6 +15,6 @@ public class UpdateStoryRequest {
     private String avt;
     private String gioithieu;
     private String tacgia;
-    private Category id_theloai;
     private Integer view;
+    private List<Long> idTheLoais;
 }

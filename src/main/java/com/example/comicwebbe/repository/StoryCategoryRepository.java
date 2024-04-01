@@ -1,5 +1,8 @@
 package com.example.comicwebbe.repository;
+import com.example.comicwebbe.entity.Category;
 import com.example.comicwebbe.entity.StoryCategory;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,5 +14,10 @@ public interface StoryCategoryRepository extends CrudRepository<StoryCategory, L
     List<StoryCategory> findAll();
     Optional<StoryCategory> findById(Long id);
     void deleteById(Long id);
+    @Modifying
+    @Query("DELETE FROM StoryCategory sc WHERE sc.story.id = :storyId")
+    void deleteStoryCategoryByStoryId(Long storyId);
+    @Query("SELECT c FROM Category c INNER JOIN StoryCategory sc ON c.id = sc.category.id WHERE sc.story.id = :storyId")
+    List<Category> findCategoriesByStoryId(Long storyId);
 }
 

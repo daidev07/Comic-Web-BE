@@ -1,7 +1,9 @@
 package com.example.comicwebbe.controller;
 import com.example.comicwebbe.dto.UpdateStoryRequest;
 import com.example.comicwebbe.dto.AddStoryRequest;
+import com.example.comicwebbe.entity.Category;
 import com.example.comicwebbe.entity.Story;
+import com.example.comicwebbe.service.StoryCategoryService;
 import com.example.comicwebbe.service.StoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +18,8 @@ import java.util.List;
 public class StoryController {
     @Autowired
     private StoryService storyService;
-
+    @Autowired
+    private StoryCategoryService storyCategoryService;
 
     @GetMapping("")
     public ResponseEntity<List<Story>> getAllTruyen(){
@@ -27,7 +30,6 @@ public class StoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-
     @PostMapping("/add")
     public ResponseEntity<String> addStory(@RequestBody AddStoryRequest addStoryRequest){
         try{
@@ -46,16 +48,25 @@ public class StoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> DeleteTran(@PathVariable Long id){
+    @DeleteMapping("/remove/{id}")
+    public ResponseEntity<String> deleteStoryAndRelatedCategories(@PathVariable Long id) {
         try {
-            storyService.deleteById(id);
+            storyService.deleteStoryAndRelatedCategories(id);
             return ResponseEntity.ok("Xóa thành công");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
-
+    //LẤY TẤT CẢ THỂ LOẠI THUỘC ID TRUYỆN ĐƯỢC CHỌN
+   @GetMapping("/{storyId}/categories")
+    public ResponseEntity<List<Category>> getStoryCategories(@PathVariable Long storyId) {
+        try {
+            List<Category> categories = storyService.getCategoriesForStory(storyId);
+            return ResponseEntity.ok(categories);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 
 }
