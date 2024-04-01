@@ -1,8 +1,6 @@
 package com.example.comicwebbe.service;
 
-import com.example.comicwebbe.entity.Truyen;
 import com.example.comicwebbe.entity.User;
-import com.example.comicwebbe.repository.TruyenRepository;
 import com.example.comicwebbe.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

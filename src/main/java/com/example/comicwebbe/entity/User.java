@@ -17,8 +17,7 @@ public class User {
     private String username;
     private String password;
     private Boolean is_admin;
-    @Lob
-    private Blob avt;
+    private String avt;
 
 
     public Long getId() {
@@ -69,11 +68,11 @@ public class User {
         this.is_admin = is_admin;
     }
 
-    public Blob getAvt() {
+    public String getAvt() {
         return avt;
     }
 
-    public void setAvt(Blob avt) {
+    public void setAvt(String avt) {
         this.avt = avt;
     }
 }

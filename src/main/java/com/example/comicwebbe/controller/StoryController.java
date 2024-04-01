@@ -1,8 +1,8 @@
 package com.example.comicwebbe.controller;
-import com.example.comicwebbe.dto.SuaTruyen;
-import com.example.comicwebbe.dto.ThemTruyen;
-import com.example.comicwebbe.entity.Truyen;
-import com.example.comicwebbe.service.TruyenService;
+import com.example.comicwebbe.dto.UpdateStoryRequest;
+import com.example.comicwebbe.dto.AddStoryRequest;
+import com.example.comicwebbe.entity.Story;
+import com.example.comicwebbe.service.StoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,37 +13,34 @@ import java.util.List;
 
 @Controller
 @RequestMapping("api/home")
-public class TruyenController {
+public class StoryController {
     @Autowired
-    private TruyenService truyenService;
+    private StoryService storyService;
+
 
     @GetMapping("")
-    public ResponseEntity<List<Truyen>> getAllTruyen(){
+    public ResponseEntity<List<Story>> getAllTruyen(){
         try{
-            List<Truyen> list = truyenService.getAllTruyen();
-            if(!list.isEmpty()){
+            List<Story> list = storyService.getAllTruyen();
                 return ResponseEntity.ok(list);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addStory(@RequestBody ThemTruyen themTruyen){
+    public ResponseEntity<String> addStory(@RequestBody AddStoryRequest addStoryRequest){
         try{
-            truyenService.addStory(themTruyen);
+            storyService.addStory(addStoryRequest);
             return ResponseEntity.ok("Thêm thành công");
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
     @PutMapping("/update")
-    public ResponseEntity<String> updateStory(@RequestBody SuaTruyen suaTruyen){
+    public ResponseEntity<String> updateStory(@RequestBody UpdateStoryRequest updateStoryRequest){
         try{
-            truyenService.updateStory(suaTruyen);
+            storyService.updateStory(updateStoryRequest);
             return ResponseEntity.ok("Sửa thành công");
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -52,10 +49,13 @@ public class TruyenController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> DeleteTran(@PathVariable Long id){
         try {
-            truyenService.deleteById(id);
+            storyService.deleteById(id);
             return ResponseEntity.ok("Xóa thành công");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+
+
 }

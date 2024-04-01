@@ -1,7 +1,7 @@
 package com.example.comicwebbe.controller;
 
-import com.example.comicwebbe.entity.TheLoai;
-import com.example.comicwebbe.service.TheLoaiService;
+import com.example.comicwebbe.entity.Favorite;
+import com.example.comicwebbe.service.FavoriteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Controller
-@RequestMapping("api/category")
-public class TheLoaiController {
+@RequestMapping("api/favorite")
+public class FavoriteController {
     @Autowired
-    private TheLoaiService theLoaiService;
+    private FavoriteService favoriteService;
 
     @GetMapping("")
-    public ResponseEntity<List<TheLoai>> getAllTheLoai(){
+    public ResponseEntity<List<Favorite>> getAllYeuThich(){
         try{
-            List<TheLoai> list = theLoaiService.getAllTheLoai();
+            List<Favorite> list = favoriteService.getAllYeuThich();
             if(!list.isEmpty()){
                 return ResponseEntity.ok(list);
             } else {

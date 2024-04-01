@@ -4,13 +4,20 @@ import jakarta.persistence.*;
 
 @Entity
 @Table (name = "theloai")
-public class TheLoai {
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String ten;
 
+    public Category(Long id) {
+        this.id = id;
+    }
+
+    public Category() {
+
+    }
 
     public Long getId() {
         return id;

@@ -1,7 +1,6 @@
 package com.example.comicwebbe.repository;
 
-import com.example.comicwebbe.entity.Chuong;
-import com.example.comicwebbe.entity.YeuThich;
+import com.example.comicwebbe.entity.Story;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,8 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface YeuThichRepository extends CrudRepository<YeuThich, Long> {
-    List<YeuThich> findAll();
-    Optional<YeuThich> findById(Long id);
+public interface StoryRepository extends CrudRepository<Story, Long> {
+
+    List<Story> findAll();
+    Optional<Story> findById(Long id);
     void deleteById(Long id);
 }

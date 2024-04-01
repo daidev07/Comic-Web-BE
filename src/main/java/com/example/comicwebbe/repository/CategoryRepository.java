@@ -1,7 +1,6 @@
 package com.example.comicwebbe.repository;
 
-import com.example.comicwebbe.entity.LichSu;
-import com.example.comicwebbe.entity.YeuThich;
+import com.example.comicwebbe.entity.Category;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,8 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface LichSuRepository extends CrudRepository<LichSu, Long> {
-    List<LichSu> findAll();
-    Optional<LichSu> findById(Long id);
+public interface CategoryRepository extends CrudRepository<Category, Long> {
+
+    List<Category> findAll();
+    Optional<Category> findById(Long id);
     void deleteById(Long id);
 }

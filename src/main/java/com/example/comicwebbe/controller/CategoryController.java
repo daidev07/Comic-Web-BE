@@ -1,9 +1,7 @@
 package com.example.comicwebbe.controller;
 
-import com.example.comicwebbe.entity.Chuong;
-import com.example.comicwebbe.entity.LichSu;
-import com.example.comicwebbe.service.ChuongService;
-import com.example.comicwebbe.service.LichSuService;
+import com.example.comicwebbe.entity.Category;
+import com.example.comicwebbe.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,15 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Controller
-@RequestMapping("api/history")
-public class LichSuController {
+@RequestMapping("api/category")
+public class CategoryController {
     @Autowired
-    private LichSuService lichSuService;
+    private CategoryService categoryService;
 
     @GetMapping("")
-    public ResponseEntity<List<LichSu>> getAllLichSu(){
+    public ResponseEntity<List<Category>> getAllTheLoai(){
         try{
-            List<LichSu> list = lichSuService.getAllLichSu();
+            List<Category> list = categoryService.getAllTheLoai();
             if(!list.isEmpty()){
                 return ResponseEntity.ok(list);
             } else {

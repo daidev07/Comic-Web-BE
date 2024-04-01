@@ -1,14 +1,15 @@
 package com.example.comicwebbe.repository;
+import com.example.comicwebbe.entity.StoryCategory;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import com.example.comicwebbe.entity.Chuong;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ChuongRepository extends CrudRepository<Chuong, Long> {
-    List<Chuong> findAll();
-    Optional<Chuong> findById(Long id);
+public interface StoryCategoryRepository extends CrudRepository<StoryCategory, Long> {
+    List<StoryCategory> findAll();
+    Optional<StoryCategory> findById(Long id);
     void deleteById(Long id);
 }
+

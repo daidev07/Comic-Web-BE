@@ -6,17 +6,17 @@ import java.time.LocalDate;
 
 @Entity
 @Table (name = "binhluan")
-public class BinhLuan {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
     @JoinColumn(name = "id_user")
-    private User id_user;
+    private User user;
     @ManyToOne
     @JoinColumn(name = "id_truyen")
-    private Truyen id_truyen;
+    private Story story;
     private String noidung;
 
     private LocalDate thoi_gian_dang;
@@ -29,20 +29,20 @@ public class BinhLuan {
         this.id = id;
     }
 
-    public User getId_user() {
-        return id_user;
+    public User getUser() {
+        return user;
     }
 
-    public void setId_user(User id_user) {
-        this.id_user = id_user;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public Truyen getId_truyen() {
-        return id_truyen;
+    public Story getTruyen() {
+        return story;
     }
 
-    public void setId_truyen(Truyen id_truyen) {
-        this.id_truyen = id_truyen;
+    public void setTruyen(Story story) {
+        this.story = story;
     }
 
     public String getNoidung() {

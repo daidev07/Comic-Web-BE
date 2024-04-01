@@ -2,11 +2,9 @@ package com.example.comicwebbe.entity;
 
 import jakarta.persistence.*;
 
-import java.sql.Blob;
-
 @Entity
 @Table (name = "chuong")
-public class Chuong {
+public class Chapter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,7 +14,7 @@ public class Chuong {
     private Boolean is_reading;
     @ManyToOne
     @JoinColumn(name = "id_truyen")
-    private Truyen id_truyen;
+    private Story story;
 
 
     public Long getId() {
@@ -59,11 +57,11 @@ public class Chuong {
         this.is_reading = is_reading;
     }
 
-    public Truyen getId_truyen() {
-        return id_truyen;
+    public Story getTruyen() {
+        return story;
     }
 
-    public void setId_truyen(Truyen id_truyen) {
-        this.id_truyen = id_truyen;
+    public void setTruyen(Story story) {
+        this.story = story;
     }
 }

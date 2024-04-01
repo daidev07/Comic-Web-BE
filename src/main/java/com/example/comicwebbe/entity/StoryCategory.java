@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id;
 
 @Entity
 @Table(name = "truyen_theloai")
-public class Truyen_TheLoai {
+public class StoryCategory {
 
     @jakarta.persistence.Id
     @Id
@@ -14,27 +14,35 @@ public class Truyen_TheLoai {
 
     @ManyToOne
     @JoinColumn(name = "id_truyen", nullable = false)
-    private Truyen truyen;
+    private Story story;
 
     @ManyToOne
     @JoinColumn(name = "id_theloai", nullable = false)
-    private TheLoai theLoai;
+    private Category category;
 
-
-    public Truyen getTruyen() {
-        return truyen;
+    public StoryCategory(Long idStory, Long idCategory) {
+        this.story = new Story(idStory);
+        this.category = new Category(idCategory);
     }
 
-    public void setTruyen(Truyen truyen) {
-        this.truyen = truyen;
+    public StoryCategory() {
+
     }
 
-    public TheLoai getTheLoai() {
-        return theLoai;
+    public Story getStory() {
+        return story;
     }
 
-    public void setTheLoai(TheLoai theLoai) {
-        this.theLoai = theLoai;
+    public void setStory(Story story) {
+        this.story = story;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public void setId(Long id) {

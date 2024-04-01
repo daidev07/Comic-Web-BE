@@ -3,8 +3,9 @@ package com.example.comicwebbe.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table (name = "lichsu")
-public class LichSu {
+@Table (name = "yeuthich")
+public class Favorite {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,7 +14,7 @@ public class LichSu {
     private User id_user;
     @ManyToOne
     @JoinColumn(name = "id_truyen")
-    private Truyen id_truyen;
+    private Story id_story;
 
     public Long getId() {
         return id;
@@ -31,11 +32,11 @@ public class LichSu {
         this.id_user = id_user;
     }
 
-    public Truyen getId_truyen() {
-        return id_truyen;
+    public Story getId_truyen() {
+        return id_story;
     }
 
-    public void setId_truyen(Truyen id_truyen) {
-        this.id_truyen = id_truyen;
+    public void setId_truyen(Story id_story) {
+        this.id_story = id_story;
     }
 }

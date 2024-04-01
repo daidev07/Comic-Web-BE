@@ -1,17 +1,19 @@
 package com.example.comicwebbe.dto;
 
-import com.example.comicwebbe.entity.TheLoai;
+import com.example.comicwebbe.entity.Category;
 import lombok.Data;
+import org.attoparser.dom.Text;
 
+import java.awt.*;
 import java.sql.Blob;
 
 @Data
-public class SuaTruyen {
+public class UpdateStoryRequest {
     private Long id;
     private String ten;
-    private Blob avt;
+    private String avt;
     private String gioithieu;
     private String tacgia;
-    private TheLoai id_theloai;
+    private Category id_theloai;
     private Integer view;
 }

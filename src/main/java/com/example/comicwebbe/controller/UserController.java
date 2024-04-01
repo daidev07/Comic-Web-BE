@@ -1,8 +1,6 @@
 package com.example.comicwebbe.controller;
 
-import com.example.comicwebbe.entity.Chuong;
 import com.example.comicwebbe.entity.User;
-import com.example.comicwebbe.service.ChuongService;
 import com.example.comicwebbe.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
