@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("api/home")
+@RequestMapping("api/story")
 public class StoryController {
     @Autowired
     private StoryService storyService;
@@ -54,10 +54,10 @@ public class StoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-    @PutMapping("/update/{storyId}") // Sử dụng path variable để lấy storyId từ URL
+    @PutMapping("/update/{storyId}")
     public ResponseEntity<String> updateStory(@PathVariable Long storyId, @RequestBody UpdateStoryRequest updateStoryRequest){
         try{
-            storyService.updateStory(storyId, updateStoryRequest); // Truyền storyId và updateStoryRequest vào service
+            storyService.updateStory(storyId, updateStoryRequest);
             return ResponseEntity.ok("Sửa thành công");
         } catch (RuntimeException e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -70,6 +70,16 @@ public class StoryController {
         try {
             storyService.deleteStoryAndRelatedCategories(id);
             return ResponseEntity.ok("Xóa thành công");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+    //LẤY TẤT CẢ THỂ LOẠI THUỘC ID TRUYỆN ĐƯỢC CHỌN
+    @GetMapping("/{storyId}/categories")
+    public ResponseEntity<List<Category>> getStoryCategories(@PathVariable Long storyId) {
+        try {
+            List<Category> categories = storyService.getCategoriesForStory(storyId);
+            return ResponseEntity.ok(categories);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
