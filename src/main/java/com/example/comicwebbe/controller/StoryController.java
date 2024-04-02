@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("api/home")
+@RequestMapping("api/admin")
 public class StoryController {
     @Autowired
     private StoryService storyService;
@@ -39,13 +39,15 @@ public class StoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-    @PutMapping("/update")
-    public ResponseEntity<String> updateStory(@RequestBody UpdateStoryRequest updateStoryRequest){
+    @PutMapping("/update/{storyId}") // Sử dụng path variable để lấy storyId từ URL
+    public ResponseEntity<String> updateStory(@PathVariable Long storyId, @RequestBody UpdateStoryRequest updateStoryRequest){
         try{
-            storyService.updateStory(updateStoryRequest);
+            storyService.updateStory(storyId, updateStoryRequest); // Truyền storyId và updateStoryRequest vào service
             return ResponseEntity.ok("Sửa thành công");
+        } catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi không xác định");
         }
     }
     @DeleteMapping("/remove/{id}")

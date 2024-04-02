@@ -69,42 +69,45 @@ public class StoryService {
         }
     }
     @Transactional
-    public void updateStory (UpdateStoryRequest updateStoryRequest){
-        try{
+    public void updateStory(Long storyId, UpdateStoryRequest updateStoryRequest) {
+        try {
+            // Kiểm tra xem câu chuyện có tồn tại không
+            Optional<Story> existingStoryOptional = storyRepository.findById(storyId);
+            if (existingStoryOptional.isPresent()) {
+                Story existingStory = existingStoryOptional.get();
 
-            storyCategoryRepository.deleteStoryCategoryByStoryId(updateStoryRequest.getId());
+                // Xóa các thể loại câu chuyện cũ
+                storyCategoryRepository.deleteStoryCategoryByStoryId(storyId);
 
-            String base64Content = updateStoryRequest.getAvt();
-            byte[] avt = Base64.getDecoder().decode(base64Content);
+                // Cập nhật thông tin câu chuyện
+                String base64Content = updateStoryRequest.getAvt();
+                byte[] avt = Base64.getDecoder().decode(base64Content);
 
-            Story story = new Story();
-            story.setId(updateStoryRequest.getId());
-            story.setTen(updateStoryRequest.getTen());
-            story.setAvt(avt);
-            story.setGioithieu(updateStoryRequest.getGioithieu());
-            story.setTacgia(updateStoryRequest.getTacgia());
-            story.setView(updateStoryRequest.getView());
+                existingStory.setTen(updateStoryRequest.getTen());
+                existingStory.setAvt(avt);
+                existingStory.setGioithieu(updateStoryRequest.getGioithieu());
+                existingStory.setTacgia(updateStoryRequest.getTacgia());
+                existingStory.setView(updateStoryRequest.getView());
 
+                Story updatedStory = storyRepository.save(existingStory);
 
-            Story newStory = storyRepository.save(story);
-
-            for (Long idTheLoai : updateStoryRequest.getIdTheLoais()) {
-                // Kiểm tra xem thể loại có tồn tại không
-                Optional<Category> cateOptional = categoryRepository.findById(idTheLoai);
-                if (cateOptional.isPresent()) {
-                    StoryCategory storyCategory = new StoryCategory(newStory.getId(), idTheLoai);
-
-                    storyCategoryRepository.save(storyCategory);
-                } else {
-                    // Xử lý khi thể loại không tồn tại
-                    throw new RuntimeException("Thể loại không tồn tại: " + idTheLoai);
+                // Thêm các thể loại mới
+                for (Long idTheLoai : updateStoryRequest.getIdTheLoais()) {
+                    Optional<Category> cateOptional = categoryRepository.findById(idTheLoai);
+                    if (cateOptional.isPresent()) {
+                        StoryCategory storyCategory = new StoryCategory(updatedStory.getId(), idTheLoai);
+                        storyCategoryRepository.save(storyCategory);
+                    } else {
+                        throw new RuntimeException("Thể loại không tồn tại: " + idTheLoai);
+                    }
                 }
+            } else {
+                throw new RuntimeException("Không tìm thấy câu chuyện có ID: " + storyId);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("error::" + e);
             throw new RuntimeException(e);
         }
-
     }
     public List<Category> getCategoriesForStory(Long storyId) {
         return storyCategoryRepository.findCategoriesByStoryId(storyId);
