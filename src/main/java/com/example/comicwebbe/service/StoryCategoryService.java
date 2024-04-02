@@ -23,8 +23,5 @@ public class StoryCategoryService {
     public void findById(Long id) {
         storyCategoryRepository.findById(id);
     }
-    public void deleteStoryCateByStoryId(Long storyId) {
-        storyCategoryRepository.deleteStoryCategoryByStoryId(storyId);
-    }
 
 }

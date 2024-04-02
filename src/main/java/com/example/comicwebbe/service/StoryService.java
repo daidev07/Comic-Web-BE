@@ -10,6 +10,8 @@ import com.example.comicwebbe.repository.StoryRepository;
 import com.example.comicwebbe.repository.StoryCategoryRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
@@ -66,32 +68,43 @@ public class StoryService {
             }
         }
     }
-
+    @Transactional
     public void updateStory (UpdateStoryRequest updateStoryRequest){
-        String base64Content = updateStoryRequest.getAvt();
-        byte[] avt = Base64.getDecoder().decode(base64Content);
+        try{
 
-        Story story = new Story();
-        story.setId(updateStoryRequest.getId());
-        story.setTen(updateStoryRequest.getTen());
-        story.setAvt(avt);
-        story.setGioithieu(updateStoryRequest.getGioithieu());
-        story.setTacgia(updateStoryRequest.getTacgia());
-        story.setView(updateStoryRequest.getView());
+            storyCategoryRepository.deleteStoryCategoryByStoryId(updateStoryRequest.getId());
 
-        Story newStory = storyRepository.save(story);
+            String base64Content = updateStoryRequest.getAvt();
+            byte[] avt = Base64.getDecoder().decode(base64Content);
 
-        for (Long idTheLoai : updateStoryRequest.getIdTheLoais()) {
-            // Kiểm tra xem thể loại có tồn tại không
-            Optional<Category> cateOptional = categoryRepository.findById(idTheLoai);
-            if (cateOptional.isPresent()) {
-                StoryCategory storyCategory = new StoryCategory(newStory.getId(), idTheLoai);
-                storyCategoryRepository.save(storyCategory);
-            } else {
-                // Xử lý khi thể loại không tồn tại
-                throw new RuntimeException("Thể loại không tồn tại: " + idTheLoai);
+            Story story = new Story();
+            story.setId(updateStoryRequest.getId());
+            story.setTen(updateStoryRequest.getTen());
+            story.setAvt(avt);
+            story.setGioithieu(updateStoryRequest.getGioithieu());
+            story.setTacgia(updateStoryRequest.getTacgia());
+            story.setView(updateStoryRequest.getView());
+
+
+            Story newStory = storyRepository.save(story);
+
+            for (Long idTheLoai : updateStoryRequest.getIdTheLoais()) {
+                // Kiểm tra xem thể loại có tồn tại không
+                Optional<Category> cateOptional = categoryRepository.findById(idTheLoai);
+                if (cateOptional.isPresent()) {
+                    StoryCategory storyCategory = new StoryCategory(newStory.getId(), idTheLoai);
+
+                    storyCategoryRepository.save(storyCategory);
+                } else {
+                    // Xử lý khi thể loại không tồn tại
+                    throw new RuntimeException("Thể loại không tồn tại: " + idTheLoai);
+                }
             }
+        }catch (Exception e){
+            System.out.println("error::" + e);
+            throw new RuntimeException(e);
         }
+
     }
     public List<Category> getCategoriesForStory(Long storyId) {
         return storyCategoryRepository.findCategoriesByStoryId(storyId);
