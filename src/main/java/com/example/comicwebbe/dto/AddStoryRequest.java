@@ -14,4 +14,5 @@ public class AddStoryRequest {
     private String tacgia;
     private Integer view;
     private List<Long> idTheLoais;
+    private List<AddChapterRequest> addChapterRequests;
 }

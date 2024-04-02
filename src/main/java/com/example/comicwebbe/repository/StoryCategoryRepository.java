@@ -17,6 +17,9 @@ public interface StoryCategoryRepository extends CrudRepository<StoryCategory, L
     @Modifying
     @Query("DELETE FROM StoryCategory sc WHERE sc.story.id = :storyId")
     void deleteStoryCategoryByStoryId(Long storyId);
+    @Modifying
+    @Query("DELETE FROM StoryCategory sc WHERE sc.category.id = :cateId")
+    void deleteCateFromStoryCategoryByCateId(Long cateId);
     @Query("SELECT c FROM Category c INNER JOIN StoryCategory sc ON c.id = sc.category.id WHERE sc.story.id = :storyId")
     List<Category> findCategoriesByStoryId(Long storyId);
 }

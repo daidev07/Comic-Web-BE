@@ -3,6 +3,7 @@ import com.example.comicwebbe.dto.UpdateStoryRequest;
 import com.example.comicwebbe.dto.AddStoryRequest;
 import com.example.comicwebbe.entity.Category;
 import com.example.comicwebbe.entity.Story;
+import com.example.comicwebbe.service.ChapterService;
 import com.example.comicwebbe.service.StoryCategoryService;
 import com.example.comicwebbe.service.StoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ public class StoryController {
     private StoryService storyService;
     @Autowired
     private StoryCategoryService storyCategoryService;
+    @Autowired
+    private ChapterService chapterService;
 
     @GetMapping("")
     public ResponseEntity<List<Story>> getAllTruyen(){

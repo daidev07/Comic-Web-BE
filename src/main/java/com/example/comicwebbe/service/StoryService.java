@@ -6,6 +6,7 @@ import com.example.comicwebbe.entity.Category;
 import com.example.comicwebbe.entity.Story;
 import com.example.comicwebbe.entity.StoryCategory;
 import com.example.comicwebbe.repository.CategoryRepository;
+import com.example.comicwebbe.repository.ChapterRepository;
 import com.example.comicwebbe.repository.StoryRepository;
 import com.example.comicwebbe.repository.StoryCategoryRepository;
 import jakarta.transaction.Transactional;
@@ -26,6 +27,8 @@ public class StoryService {
     private StoryCategoryRepository storyCategoryRepository;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private ChapterRepository chapterRepository;
     public List<Story> getAllTruyen() {
         return storyRepository.findAll();
     }
@@ -42,7 +45,7 @@ public class StoryService {
     public Optional<Story> findById(Long id) {
         return storyRepository.findById(id);
     }
-//    CRUD Story
+    //CRUD Story
     public void addStory (AddStoryRequest addStoryRequest){
         String base64Content = addStoryRequest.getAvt();
         byte[] avt = Base64.getDecoder().decode(base64Content);
@@ -63,7 +66,6 @@ public class StoryService {
                 StoryCategory storyCategory = new StoryCategory(newStory.getId(), idTheLoai);
                 storyCategoryRepository.save(storyCategory);
             } else {
-                // Xử lý khi thể loại không tồn tại
                 throw new RuntimeException("Thể loại không tồn tại: " + idTheLoai);
             }
         }
