@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("api/admin")
+@RequestMapping("api/home")
 public class StoryController {
     @Autowired
     private StoryService storyService;
