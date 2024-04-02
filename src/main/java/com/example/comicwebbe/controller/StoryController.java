@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("api/admin")
@@ -30,6 +31,17 @@ public class StoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Optional<Story>> getDetailStory(@PathVariable Long id){
+        try{
+            Optional<Story> story = storyService.findById(id);
+            return ResponseEntity.ok(story);
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
     @PostMapping("/add")
     public ResponseEntity<String> addStory(@RequestBody AddStoryRequest addStoryRequest){
         try{
@@ -59,16 +71,4 @@ public class StoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-
-    //LẤY TẤT CẢ THỂ LOẠI THUỘC ID TRUYỆN ĐƯỢC CHỌN
-   @GetMapping("/{storyId}/categories")
-    public ResponseEntity<List<Category>> getStoryCategories(@PathVariable Long storyId) {
-        try {
-            List<Category> categories = storyService.getCategoriesForStory(storyId);
-            return ResponseEntity.ok(categories);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
-
 }

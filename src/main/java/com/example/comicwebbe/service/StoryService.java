@@ -39,8 +39,8 @@ public class StoryService {
     public void deleteById(Long id){
         storyRepository.deleteById(id);
     }
-    public void findById(Long id) {
-        storyRepository.findById(id);
+    public Optional<Story> findById(Long id) {
+        return storyRepository.findById(id);
     }
 //    CRUD Story
     public void addStory (AddStoryRequest addStoryRequest){
