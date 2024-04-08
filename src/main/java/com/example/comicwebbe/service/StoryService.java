@@ -14,10 +14,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 @Service
 public class StoryService {
@@ -29,6 +39,7 @@ public class StoryService {
     private CategoryRepository categoryRepository;
     @Autowired
     private ChapterRepository chapterRepository;
+
     public List<Story> getAllTruyen() {
         return storyRepository.findAll();
     }
@@ -39,23 +50,40 @@ public class StoryService {
         // Sau đó xóa truyện từ bảng Story
         storyRepository.deleteById(storyId);
     }
-    public void deleteById(Long id){
+
+    public void deleteById(Long id) {
         storyRepository.deleteById(id);
     }
+
     public Optional<Story> findById(Long id) {
         return storyRepository.findById(id);
     }
+
     //CRUD Story
-    public void addStory (AddStoryRequest addStoryRequest){
-        String base64Content = addStoryRequest.getAvt();
-        byte[] avt = Base64.getDecoder().decode(base64Content);
+    public void addStory(AddStoryRequest addStoryRequest) {
+        MultipartFile avtFile = addStoryRequest.getAvtFile();
+        String avtFileName = avtFile.getOriginalFilename();
+
+        CompletableFuture.runAsync(() -> {
+            try {
+                Path uploadPath = Paths.get("src", "main", "resources", "uploads");
+                // Tạo thư mục uploads nếu nó chưa tồn tại
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+                // Sao chép dữ liệu từ InputStream của MultipartFile vào tập tin trên đĩa
+                Files.copy(avtFile.getInputStream(), uploadPath.resolve(avtFileName), StandardCopyOption.REPLACE_EXISTING);// Xác định đường dẫn của thư mục uploads
+            } catch (IOException e) {
+                throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
+            }
+        });
 
         Story story = new Story();
         story.setTen(addStoryRequest.getTen());
-        story.setAvt(avt);
         story.setGioithieu(addStoryRequest.getGioithieu());
         story.setTacgia(addStoryRequest.getTacgia());
         story.setView(addStoryRequest.getView());
+        story.setAvt(avtFileName);
 
         Story newStory = storyRepository.save(story);
 
@@ -70,23 +98,23 @@ public class StoryService {
             }
         }
     }
+
     @Transactional
     public void updateStory(Long storyId, UpdateStoryRequest updateStoryRequest) {
         try {
-            // Kiểm tra xem câu chuyện có tồn tại không
+            // Kiểm tra story có tồn tại không
             Optional<Story> existingStoryOptional = storyRepository.findById(storyId);
             if (existingStoryOptional.isPresent()) {
                 Story existingStory = existingStoryOptional.get();
 
-                // Xóa các thể loại câu chuyện cũ
+                // Xóa các thể loại story cũ
                 storyCategoryRepository.deleteStoryCategoryByStoryId(storyId);
 
-                // Cập nhật thông tin câu chuyện
+                // Cập nhật thông tin story
                 String base64Content = updateStoryRequest.getAvt();
                 byte[] avt = Base64.getDecoder().decode(base64Content);
 
                 existingStory.setTen(updateStoryRequest.getTen());
-                existingStory.setAvt(avt);
                 existingStory.setGioithieu(updateStoryRequest.getGioithieu());
                 existingStory.setTacgia(updateStoryRequest.getTacgia());
                 existingStory.setView(updateStoryRequest.getView());
@@ -111,6 +139,7 @@ public class StoryService {
             throw new RuntimeException(e);
         }
     }
+
     public List<Category> getCategoriesForStory(Long storyId) {
         return storyCategoryRepository.findCategoriesByStoryId(storyId);
     }

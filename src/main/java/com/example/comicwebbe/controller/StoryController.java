@@ -1,6 +1,7 @@
 package com.example.comicwebbe.controller;
-import com.example.comicwebbe.dto.UpdateStoryRequest;
+
 import com.example.comicwebbe.dto.AddStoryRequest;
+import com.example.comicwebbe.dto.UpdateStoryRequest;
 import com.example.comicwebbe.entity.Category;
 import com.example.comicwebbe.entity.Story;
 import com.example.comicwebbe.service.ChapterService;
@@ -46,7 +47,7 @@ public class StoryController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addStory(@RequestBody AddStoryRequest addStoryRequest){
+    public ResponseEntity<String> addStory(@ModelAttribute AddStoryRequest addStoryRequest){
         try{
             storyService.addStory(addStoryRequest);
             return ResponseEntity.ok("Thêm thành công");
