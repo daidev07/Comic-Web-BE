@@ -18,7 +18,6 @@ public class Story {
     private String gioithieu;
     private String tacgia;
     private Integer view;
-
     public Story(Long id) {
         this.id = id;
     }

@@ -35,7 +35,6 @@ public class StoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<Optional<Story>> getDetailStory(@PathVariable Long id){
         try{
@@ -56,7 +55,7 @@ public class StoryController {
         }
     }
     @PutMapping("/update/{storyId}")
-    public ResponseEntity<String> updateStory(@PathVariable Long storyId, @RequestBody UpdateStoryRequest updateStoryRequest){
+    public ResponseEntity<String> updateStory(@PathVariable Long storyId, @ModelAttribute UpdateStoryRequest updateStoryRequest){
         try{
             storyService.updateStory(storyId, updateStoryRequest);
             return ResponseEntity.ok("Sửa thành công");

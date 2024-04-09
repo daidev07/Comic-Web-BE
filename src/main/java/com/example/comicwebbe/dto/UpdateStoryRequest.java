@@ -13,7 +13,6 @@ import java.util.List;
 public class UpdateStoryRequest {
     private Long id;
     private String ten;
-    private String avt;
     private MultipartFile avtFile;
     private String gioithieu;
     private String tacgia;

@@ -23,6 +23,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +48,7 @@ public class StoryService {
 
     @Transactional
     public void deleteStoryAndRelatedCategories(Long storyId) {
+        chapterRepository.deleteChapterByStoryId(storyId);
         storyCategoryRepository.deleteStoryCategoryByStoryId(storyId);
         // Sau đó xóa truyện từ bảng Story
         storyRepository.deleteById(storyId);
@@ -64,19 +67,17 @@ public class StoryService {
         MultipartFile avtFile = addStoryRequest.getAvtFile();
         String avtFileName = avtFile.getOriginalFilename();
 
-        CompletableFuture.runAsync(() -> {
-            try {
-                Path uploadPath = Paths.get("src", "main", "resources", "uploads");
-                // Tạo thư mục uploads nếu nó chưa tồn tại
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
-                // Sao chép dữ liệu từ InputStream của MultipartFile vào tập tin trên đĩa
-                Files.copy(avtFile.getInputStream(), uploadPath.resolve(avtFileName), StandardCopyOption.REPLACE_EXISTING);// Xác định đường dẫn của thư mục uploads
-            } catch (IOException e) {
-                throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
+        try {
+            Path uploadPath = Paths.get("src", "main", "resources", "uploads");
+            // Tạo thư mục uploads nếu nó chưa tồn tại
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
             }
-        });
+            // Sao chép dữ liệu từ InputStream của MultipartFile vào tập tin trên đĩa
+            Files.copy(avtFile.getInputStream(), uploadPath.resolve(avtFileName), StandardCopyOption.REPLACE_EXISTING);// Xác định đường dẫn của thư mục uploads
+        } catch (IOException e) {
+            throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
+        }
 
         Story story = new Story();
         story.setTen(addStoryRequest.getTen());
@@ -110,10 +111,27 @@ public class StoryService {
                 // Xóa các thể loại story cũ
                 storyCategoryRepository.deleteStoryCategoryByStoryId(storyId);
 
-                // Cập nhật thông tin story
-                String base64Content = updateStoryRequest.getAvt();
-                byte[] avt = Base64.getDecoder().decode(base64Content);
+                MultipartFile avtFile = updateStoryRequest.getAvtFile();
+                String avtFileName = avtFile.getOriginalFilename();
 
+                String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+                String timeNameImg = currentTime + "_" + avtFileName;
+
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        Path uploadPath = Paths.get("src", "main", "resources", "uploads");
+                        // Tạo thư mục uploads nếu nó chưa tồn tại
+                        if (!Files.exists(uploadPath)) {
+                            Files.createDirectories(uploadPath);
+                        }
+                        // Sao chép dữ liệu từ InputStream của MultipartFile vào tập tin trên đĩa
+                        Files.copy(avtFile.getInputStream(), uploadPath.resolve(timeNameImg), StandardCopyOption.REPLACE_EXISTING);// Xác định đường dẫn của thư mục uploads
+                    } catch (IOException e) {
+                        throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
+                    }
+                });
+
+                existingStory.setAvt(avtFileName);
                 existingStory.setTen(updateStoryRequest.getTen());
                 existingStory.setGioithieu(updateStoryRequest.getGioithieu());
                 existingStory.setTacgia(updateStoryRequest.getTacgia());
@@ -143,6 +161,5 @@ public class StoryService {
     public List<Category> getCategoriesForStory(Long storyId) {
         return storyCategoryRepository.findCategoriesByStoryId(storyId);
     }
-
 
 }

@@ -12,11 +12,18 @@ public class Chapter {
     private Long id;
     private Long so;
     private String ten;
-    @Lob
-    private byte[] noidung;
+    private String noidung;
     private Boolean is_reading;
     @ManyToOne
     @JoinColumn(name = "id_truyen")
     private Story story;
 
+    public Chapter(Long so, String ten, String noidung, Story story) {
+        this.so = so;
+        this.ten = ten;
+        this.noidung = noidung;
+        this.story = story;
+    }
+    public Chapter() {
+    }
 }

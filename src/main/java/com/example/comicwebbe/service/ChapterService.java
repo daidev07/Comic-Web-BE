@@ -1,6 +1,8 @@
 package com.example.comicwebbe.service;
+
 import com.example.comicwebbe.dto.AddChapterRequest;
 import com.example.comicwebbe.dto.AddStoryRequest;
+import com.example.comicwebbe.dto.UpdateChapterRequest;
 import com.example.comicwebbe.dto.UpdateStoryRequest;
 import com.example.comicwebbe.entity.Category;
 import com.example.comicwebbe.entity.Chapter;
@@ -10,11 +12,22 @@ import com.example.comicwebbe.repository.ChapterRepository;
 import com.example.comicwebbe.repository.StoryRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ChapterService {
@@ -22,33 +35,41 @@ public class ChapterService {
     private ChapterRepository chapterRepository;
     @Autowired
     private StoryRepository storyRepository;
-    public List<Chapter> getAllChuong() {
-        return chapterRepository.findAll();
+
+    public List<Chapter> findListByStoryId(Long storyId) {
+        return chapterRepository.findListByStoryId(storyId);
     }
-    public void deleteById(Long id){
-        chapterRepository.deleteById(id);
-    }
-    public void findById(Long id){
-        chapterRepository.findById(id);
-    }
+
+    ////////////////////////////   THÊM CHAPTER
     @Transactional
-    public void addChapter (Long storyId, AddChapterRequest addChapterRequest){
+    public void addChapter(Long storyId, AddChapterRequest addChapterRequest) {
         try {
+            MultipartFile noidung = addChapterRequest.getNoidung();
+            String noidunganh = noidung.getOriginalFilename();
+
+            String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+            String timeNameImg = currentTime + "_" + noidunganh;
+            try {
+                Path uploadPath = Paths.get("src", "main", "resources", "uploads");
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+                // Sao chép dữ liệu từ InputStream của MultipartFile vào tập tin trên đĩa
+                Files.copy(noidung.getInputStream(), uploadPath.resolve(timeNameImg), StandardCopyOption.REPLACE_EXISTING);// Xác định đường dẫn của thư mục uploads
+            } catch (IOException e) {
+                throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
+            }
+            System.out.println("CHẠY TỚI ĐÂY CHƯA???");
+
             // Tìm câu chuyện dựa trên id_truyen từ AddChapterRequest
             Optional<Story> storyOptional = storyRepository.findById(storyId);
             if (storyOptional.isPresent()) {
-                String base64Content = addChapterRequest.getNoidung();
-                byte[] noidung = Base64.getDecoder().decode(base64Content);
-
                 Chapter chapter = new Chapter();
                 chapter.setSo(addChapterRequest.getSo());
                 chapter.setTen(addChapterRequest.getTen());
-                chapter.setNoidung(noidung);
-                chapter.setIs_reading(addChapterRequest.getIs_reading());
-
-                // Gán câu chuyện cho chương
+                chapter.setNoidung(timeNameImg);
+                // Gán story cho chương
                 chapter.setStory(storyOptional.get());
-
                 // Lưu chương mới vào cơ sở dữ liệu
                 chapterRepository.save(chapter);
             } else {
@@ -58,45 +79,59 @@ public class ChapterService {
             throw new RuntimeException("Lỗi khi thêm chương mới: " + e.getMessage());
         }
     }
-//    @Transactional
-//    public void updateStory(Long storyId, UpdateStoryRequest updateStoryRequest) {
-//        try {
-//            // Kiểm tra xem câu chuyện có tồn tại không
-//            Optional<Story> existingStoryOptional = storyRepository.findById(storyId);
-//            if (existingStoryOptional.isPresent()) {
-//                Story existingStory = existingStoryOptional.get();
-//
-//                // Xóa các thể loại câu chuyện cũ
-//                storyCategoryRepository.deleteStoryCategoryByStoryId(storyId);
-//
-//                // Cập nhật thông tin câu chuyện
-//                String base64Content = updateStoryRequest.getAvt();
-//                byte[] avt = Base64.getDecoder().decode(base64Content);
-//
-//                existingStory.setTen(updateStoryRequest.getTen());
-//                existingStory.setAvt(avt);
-//                existingStory.setGioithieu(updateStoryRequest.getGioithieu());
-//                existingStory.setTacgia(updateStoryRequest.getTacgia());
-//                existingStory.setView(updateStoryRequest.getView());
-//
-//                Story updatedStory = storyRepository.save(existingStory);
-//
-//                // Thêm các thể loại mới
-//                for (Long idTheLoai : updateStoryRequest.getIdTheLoais()) {
-//                    Optional<Category> cateOptional = categoryRepository.findById(idTheLoai);
-//                    if (cateOptional.isPresent()) {
-//                        StoryCategory storyCategory = new StoryCategory(updatedStory.getId(), idTheLoai);
-//                        storyCategoryRepository.save(storyCategory);
-//                    } else {
-//                        throw new RuntimeException("Thể loại không tồn tại: " + idTheLoai);
-//                    }
-//                }
-//            } else {
-//                throw new RuntimeException("Không tìm thấy câu chuyện có ID: " + storyId);
-//            }
-//        } catch (Exception e) {
-//            System.out.println("error::" + e);
-//            throw new RuntimeException(e);
-//        }
-//    }
+
+    ////////////////////////////   XÓA CHAPTER
+
+    @Transactional
+    public ResponseEntity<String> deleteChapter(Long chapterId) {
+        try {
+            chapterRepository.deleteChapterByStoryIdAndChapterId(chapterId);
+            return ResponseEntity.ok("Xóa thành công");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi không xác định");
+        }
+    }
+
+    /////////////////// CẬP NHẬT CHAPTER
+    @Transactional
+    public void updateChapter(Long chapterId, UpdateChapterRequest updateChapterRequest) {
+        try {
+            Optional<Chapter> existingChapterOptional = chapterRepository.findById(chapterId);
+
+            if (existingChapterOptional.isPresent()) {
+                Chapter existingChapter = existingChapterOptional.get();
+
+                MultipartFile noidung = updateChapterRequest.getNoidung();
+                String noidunganh = noidung.getOriginalFilename();
+
+                String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+                String timeNameImg = currentTime + "_" + noidunganh;
+
+                try {
+                    Path uploadPath = Paths.get("src", "main", "resources", "uploads");
+                    // Tạo thư mục uploads nếu nó chưa tồn tại
+                    if (!Files.exists(uploadPath)) {
+                        Files.createDirectories(uploadPath);
+                    }
+                    // Sao chép dữ liệu từ InputStream của MultipartFile vào tập tin trên đĩa
+                    Files.copy(noidung.getInputStream(), uploadPath.resolve(timeNameImg), StandardCopyOption.REPLACE_EXISTING);// Xác định đường dẫn của thư mục uploads
+                } catch (IOException e) {
+                    throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
+                }
+
+                existingChapter.setSo(updateChapterRequest.getSo());
+                existingChapter.setTen(updateChapterRequest.getTen());
+                existingChapter.setNoidung(timeNameImg);
+
+                chapterRepository.save(existingChapter);
+            } else {
+                throw new RuntimeException("Không tìm thấy chương có ID: " + chapterId);
+            }
+        } catch (Exception e) {
+            System.out.println("error::" + e);
+            throw new RuntimeException(e);
+        }
+    }
 }
