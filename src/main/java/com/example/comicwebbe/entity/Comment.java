@@ -19,6 +19,16 @@ public class Comment {
     private Story story;
     private String noidung;
 
+    public Comment(User user, Story story, String noidung, LocalDate thoi_gian_dang) {
+        this.user = user;
+        this.story = story;
+        this.noidung = noidung;
+        this.thoi_gian_dang = thoi_gian_dang;
+    }
+
+    public Comment() {
+    }
+
     private LocalDate thoi_gian_dang;
 
     public Long getId() {
