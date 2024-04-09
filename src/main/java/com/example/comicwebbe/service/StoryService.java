@@ -67,6 +67,9 @@ public class StoryService {
         MultipartFile avtFile = addStoryRequest.getAvtFile();
         String avtFileName = avtFile.getOriginalFilename();
 
+        String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        String timeNameImg = currentTime + "_" + avtFileName;
+
         try {
             Path uploadPath = Paths.get("src", "main", "resources", "uploads");
             // Tạo thư mục uploads nếu nó chưa tồn tại
@@ -74,7 +77,7 @@ public class StoryService {
                 Files.createDirectories(uploadPath);
             }
             // Sao chép dữ liệu từ InputStream của MultipartFile vào tập tin trên đĩa
-            Files.copy(avtFile.getInputStream(), uploadPath.resolve(avtFileName), StandardCopyOption.REPLACE_EXISTING);// Xác định đường dẫn của thư mục uploads
+            Files.copy(avtFile.getInputStream(), uploadPath.resolve(timeNameImg), StandardCopyOption.REPLACE_EXISTING);// Xác định đường dẫn của thư mục uploads
         } catch (IOException e) {
             throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
         }
@@ -84,7 +87,7 @@ public class StoryService {
         story.setGioithieu(addStoryRequest.getGioithieu());
         story.setTacgia(addStoryRequest.getTacgia());
         story.setView(addStoryRequest.getView());
-        story.setAvt(avtFileName);
+        story.setAvt(timeNameImg);
 
         Story newStory = storyRepository.save(story);
 
