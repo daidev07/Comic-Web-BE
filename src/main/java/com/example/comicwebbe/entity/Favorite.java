@@ -11,10 +11,20 @@ public class Favorite {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "id_user")
-    private User id_user;
+    private User user;
     @ManyToOne
     @JoinColumn(name = "id_truyen")
-    private Story id_story;
+    private Story story;
+
+    public Favorite(User user, Story story) {
+        this.user = user;
+        this.story = story;
+    }
+
+    public Favorite() {
+
+    }
+
 
     public Long getId() {
         return id;
@@ -24,19 +34,19 @@ public class Favorite {
         this.id = id;
     }
 
-    public User getId_user() {
-        return id_user;
+    public User getUser() {
+        return user;
     }
 
-    public void setId_user(User id_user) {
-        this.id_user = id_user;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public Story getId_truyen() {
-        return id_story;
+    public Story getStory() {
+        return story;
     }
 
-    public void setId_truyen(Story id_story) {
-        this.id_story = id_story;
+    public void setStory(Story story) {
+        this.story = story;
     }
 }

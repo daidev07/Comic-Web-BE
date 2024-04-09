@@ -1,15 +1,17 @@
 package com.example.comicwebbe.controller;
 
+import com.example.comicwebbe.dto.UserFavoriteRequest;
 import com.example.comicwebbe.entity.Favorite;
+import com.example.comicwebbe.entity.Story;
 import com.example.comicwebbe.service.FavoriteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("api/favorite")
@@ -17,16 +19,45 @@ public class FavoriteController {
     @Autowired
     private FavoriteService favoriteService;
 
-    @GetMapping("")
-    public ResponseEntity<List<Favorite>> getAllYeuThich(){
+    @GetMapping("/{userId}/{storyId}")
+    public ResponseEntity<Optional<Favorite>> getOneByUserIdAndStoryId(@PathVariable Long userId, @PathVariable Long storyId){
         try{
-            List<Favorite> list = favoriteService.getAllYeuThich();
-            if(!list.isEmpty()){
-                return ResponseEntity.ok(list);
+            Optional<Favorite> favorite = favoriteService.getOneByUserIdAndStoryId(userId, storyId);
+            if(!favorite.isEmpty()){
+                return ResponseEntity.ok(favorite);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
         } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<Story>> getListFavoriteStoryByUserId(@PathVariable Long userId){
+        try{
+            List<Story> list = favoriteService.getListFavoriteStoryByUserId(userId);
+            return ResponseEntity.ok(list);
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+    @PostMapping("")
+    public ResponseEntity<String> addFavorite(@RequestBody UserFavoriteRequest userFavoriteRequest){
+        try{
+            favoriteService.addOne(userFavoriteRequest);
+            return ResponseEntity.ok("Thêm thành công");
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @DeleteMapping("/{userId}/{storyId}")
+    public ResponseEntity<String> deleteOneUserIdAndStoryId(@PathVariable Long userId, @PathVariable Long storyId) {
+        try {
+            favoriteService.deleteOneUserIdAndStoryId(userId, storyId);
+            return ResponseEntity.ok("Xóa thành công");
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
