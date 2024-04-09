@@ -19,6 +19,12 @@ public class User {
     private Boolean is_admin;
     private String avt;
 
+    public User(Long id) {
+        this.id = id;
+    }
+
+    public User() {
+    }
 
     public Long getId() {
         return id;

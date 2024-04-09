@@ -1,4 +1,5 @@
 package com.example.comicwebbe.service;
+
 import com.example.comicwebbe.dto.AddCategoryRequest;
 import com.example.comicwebbe.dto.AddStoryRequest;
 import com.example.comicwebbe.entity.Category;
@@ -20,18 +21,22 @@ public class CategoryService {
     private CategoryRepository categoryRepository;
     @Autowired
     private StoryCategoryRepository storyCategoryRepository;
+
     public List<Category> getAllTheLoai() {
         return categoryRepository.findAll();
     }
+
     @Transactional
-    public void deleteById(Long cateId){
+    public void deleteById(Long cateId) {
         storyCategoryRepository.deleteCateFromStoryCategoryByCateId(cateId);
         categoryRepository.deleteById(cateId);
     }
-    public void findById(Long id){
-        categoryRepository.findById(id);
+
+    public Optional<Category> findById(Long id) {
+        return categoryRepository.findById(id);
     }
-    public void addCate (AddCategoryRequest addCategoryRequest){
+
+    public void addCate(AddCategoryRequest addCategoryRequest) {
 
         Category category = new Category();
         category.setTen(addCategoryRequest.getTen());
