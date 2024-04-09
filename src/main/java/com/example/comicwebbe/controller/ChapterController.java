@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("api/chapter")
@@ -28,6 +29,19 @@ public class ChapterController {
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Xử lý lỗi nếu có
+        }
+    }
+    @GetMapping("/get/{chapterId}")
+    public ResponseEntity<Chapter> getChapterById(@PathVariable Long chapterId) {
+        try {
+            Optional<Chapter> chapterOptional = chapterService.findById(chapterId);
+            if (chapterOptional.isPresent()) {
+                return ResponseEntity.ok(chapterOptional.get());
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

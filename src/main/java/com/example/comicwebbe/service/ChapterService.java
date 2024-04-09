@@ -40,6 +40,9 @@ public class ChapterService {
         return chapterRepository.findListByStoryId(storyId);
     }
 
+    public Optional<Chapter> findById(Long chapterId) {
+        return chapterRepository.findById(chapterId);
+    }
     ////////////////////////////   THÊM CHAPTER
     @Transactional
     public void addChapter(Long storyId, AddChapterRequest addChapterRequest) {
