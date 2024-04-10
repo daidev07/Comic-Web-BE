@@ -5,10 +5,7 @@ import com.example.comicwebbe.dto.AddStoryRequest;
 import com.example.comicwebbe.entity.Category;
 import com.example.comicwebbe.entity.Story;
 import com.example.comicwebbe.entity.StoryCategory;
-import com.example.comicwebbe.repository.CategoryRepository;
-import com.example.comicwebbe.repository.ChapterRepository;
-import com.example.comicwebbe.repository.StoryRepository;
-import com.example.comicwebbe.repository.StoryCategoryRepository;
+import com.example.comicwebbe.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,6 +38,8 @@ public class StoryService {
     private CategoryRepository categoryRepository;
     @Autowired
     private ChapterRepository chapterRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
     public List<Story> getAllTruyen() {
         return storyRepository.findAll();
@@ -50,8 +49,8 @@ public class StoryService {
     public void deleteStoryAndRelatedCategories(Long storyId) {
         chapterRepository.deleteChapterByStoryId(storyId);
         storyCategoryRepository.deleteStoryCategoryByStoryId(storyId);
-        // Sau đó xóa truyện từ bảng Story
         storyRepository.deleteById(storyId);
+        commentRepository.deleteCommentsByStoryId(storyId);
     }
 
     public void deleteById(Long id) {
