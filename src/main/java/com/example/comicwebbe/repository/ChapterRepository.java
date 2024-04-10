@@ -21,4 +21,5 @@ public interface ChapterRepository extends CrudRepository<Chapter, Long> {
     @Modifying
     @Query("DELETE FROM Chapter c WHERE c.story.id = :storyId ")
     void deleteChapterByStoryId(Long storyId);
+
 }

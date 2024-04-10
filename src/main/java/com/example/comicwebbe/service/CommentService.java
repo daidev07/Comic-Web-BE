@@ -27,9 +27,9 @@ public class CommentService {
     }
 
     public void addComment(AddCommentRequest addCommentRequest){
-        LocalDate currentDate = LocalDate.now();
-        Comment comment = new Comment(new User(addCommentRequest.getUserId()), new Story(addCommentRequest.getStoryId()), addCommentRequest.getNoidung(), currentDate);
+        LocalDateTime currentDate = LocalDateTime.now();
+        Comment comment = new Comment(new User(addCommentRequest.getUserId()), new Story(addCommentRequest.getStoryId()),
+                addCommentRequest.getNoidung(), currentDate);
         commentRepository.save(comment);
-
     }
 }

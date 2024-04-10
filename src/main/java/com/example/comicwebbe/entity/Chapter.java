@@ -1,7 +1,11 @@
 package com.example.comicwebbe.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -13,16 +17,17 @@ public class Chapter {
     private Long so;
     private String ten;
     private String noidung;
-    private Boolean is_reading;
+    private LocalDateTime thoi_gian_dang;
     @ManyToOne
     @JoinColumn(name = "id_truyen")
     private Story story;
 
-    public Chapter(Long so, String ten, String noidung, Story story) {
+    public Chapter(Long so, String ten, String noidung, Story story, LocalDateTime thoi_gian_dang) {
         this.so = so;
         this.ten = ten;
         this.noidung = noidung;
         this.story = story;
+        this.thoi_gian_dang = thoi_gian_dang;
     }
     public Chapter() {
     }

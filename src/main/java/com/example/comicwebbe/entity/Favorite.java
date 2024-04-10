@@ -1,8 +1,10 @@
 package com.example.comicwebbe.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
 @Table (name = "yeuthich")
 public class Favorite {
 
@@ -23,30 +25,5 @@ public class Favorite {
 
     public Favorite() {
 
-    }
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Story getStory() {
-        return story;
-    }
-
-    public void setStory(Story story) {
-        this.story = story;
     }
 }

@@ -1,8 +1,10 @@
 package com.example.comicwebbe.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
 @Table (name = "lichsu")
 public class History {
     @Id
@@ -15,27 +17,9 @@ public class History {
     @JoinColumn(name = "id_truyen")
     private Story story;
 
-    public Long getId() {
-        return id;
-    }
+    @ManyToOne
+    @JoinColumn(name = "id_chuong")
+    private Chapter chapter;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Story getTruyen() {
-        return story;
-    }
-
-    public void setTruyen(Story story) {
-        this.story = story;
-    }
+    private boolean da_doc;
 }

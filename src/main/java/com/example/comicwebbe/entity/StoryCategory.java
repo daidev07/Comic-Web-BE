@@ -1,9 +1,11 @@
 package com.example.comicwebbe.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 
 @Entity
+@Data
 @Table(name = "truyen_theloai")
 public class StoryCategory {
 
@@ -24,32 +26,7 @@ public class StoryCategory {
         this.story = new Story(idStory);
         this.category = new Category(idCategory);
     }
-
     public StoryCategory() {
 
-    }
-
-    public Story getStory() {
-        return story;
-    }
-
-    public void setStory(Story story) {
-        this.story = story;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
     }
 }

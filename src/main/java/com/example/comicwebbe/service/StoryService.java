@@ -3,6 +3,7 @@ package com.example.comicwebbe.service;
 import com.example.comicwebbe.dto.UpdateStoryRequest;
 import com.example.comicwebbe.dto.AddStoryRequest;
 import com.example.comicwebbe.entity.Category;
+import com.example.comicwebbe.entity.Chapter;
 import com.example.comicwebbe.entity.Story;
 import com.example.comicwebbe.entity.StoryCategory;
 import com.example.comicwebbe.repository.*;
@@ -42,23 +43,28 @@ public class StoryService {
     private CommentRepository commentRepository;
 
     public List<Story> getAllTruyen() {
-        return storyRepository.findAll();
+        List<Story> stories = storyRepository.findAll();
+        for (Story story : stories) {
+            List<Chapter> chapters = chapterRepository.findListByStoryId(story.getId());
+            story.setChapters(chapters);
+        }
+        return stories;
     }
 
     @Transactional
-    public void deleteStoryAndRelatedCategories(Long storyId) {
+    public void deleteStory(Long storyId) {
         chapterRepository.deleteChapterByStoryId(storyId);
         storyCategoryRepository.deleteStoryCategoryByStoryId(storyId);
         storyRepository.deleteById(storyId);
         commentRepository.deleteCommentsByStoryId(storyId);
     }
 
-    public void deleteById(Long id) {
-        storyRepository.deleteById(id);
-    }
-
     public Optional<Story> findById(Long id) {
         return storyRepository.findById(id);
+    }
+
+    public List<Category> getCategoriesForStory(Long storyId) {
+        return storyCategoryRepository.findCategoriesByStoryId(storyId);
     }
 
     //CRUD Story
@@ -66,27 +72,22 @@ public class StoryService {
         MultipartFile avtFile = addStoryRequest.getAvtFile();
         String avtFileName = avtFile.getOriginalFilename();
 
-        String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-        String timeNameImg = currentTime + "_" + avtFileName;
+        LocalDateTime currentTime = LocalDateTime.now();
+        String timeNameImg = currentTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + "_" + avtFileName;
 
         try {
             Path uploadPath = Paths.get("src", "main", "resources", "uploads");
-            // Tạo thư mục uploads nếu nó chưa tồn tại
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
             // Sao chép dữ liệu từ InputStream của MultipartFile vào tập tin trên đĩa
-            Files.copy(avtFile.getInputStream(), uploadPath.resolve(timeNameImg), StandardCopyOption.REPLACE_EXISTING);// Xác định đường dẫn của thư mục uploads
+            Files.copy(avtFile.getInputStream(), uploadPath.resolve(timeNameImg), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
         }
 
-        Story story = new Story();
-        story.setTen(addStoryRequest.getTen());
-        story.setGioithieu(addStoryRequest.getGioithieu());
-        story.setTacgia(addStoryRequest.getTacgia());
-        story.setView(addStoryRequest.getView());
-        story.setAvt(timeNameImg);
+        Story story = new Story(addStoryRequest.getTen(), timeNameImg, addStoryRequest.getGioithieu(),
+                addStoryRequest.getTacgia(), currentTime);
 
         Story newStory = storyRepository.save(story);
 
@@ -116,28 +117,26 @@ public class StoryService {
                 MultipartFile avtFile = updateStoryRequest.getAvtFile();
                 String avtFileName = avtFile.getOriginalFilename();
 
-                String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-                String timeNameImg = currentTime + "_" + avtFileName;
+                LocalDateTime currentTime = LocalDateTime.now();
+                String timeNameImg = currentTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + "_" + avtFileName;
 
-                CompletableFuture.runAsync(() -> {
-                    try {
-                        Path uploadPath = Paths.get("src", "main", "resources", "uploads");
-                        // Tạo thư mục uploads nếu nó chưa tồn tại
-                        if (!Files.exists(uploadPath)) {
-                            Files.createDirectories(uploadPath);
-                        }
-                        // Sao chép dữ liệu từ InputStream của MultipartFile vào tập tin trên đĩa
-                        Files.copy(avtFile.getInputStream(), uploadPath.resolve(timeNameImg), StandardCopyOption.REPLACE_EXISTING);// Xác định đường dẫn của thư mục uploads
-                    } catch (IOException e) {
-                        throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
+                try {
+                    Path uploadPath = Paths.get("src", "main", "resources", "uploads");
+                    // Tạo thư mục uploads nếu nó chưa tồn tại
+                    if (!Files.exists(uploadPath)) {
+                        Files.createDirectories(uploadPath);
                     }
-                });
+                    // Sao chép dữ liệu từ InputStream của MultipartFile vào tập tin trên đĩa
+                    Files.copy(avtFile.getInputStream(), uploadPath.resolve(timeNameImg), StandardCopyOption.REPLACE_EXISTING);// Xác định đường dẫn của thư mục uploads
+                } catch (IOException e) {
+                    throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
+                }
 
                 existingStory.setAvt(avtFileName);
                 existingStory.setTen(updateStoryRequest.getTen());
                 existingStory.setGioithieu(updateStoryRequest.getGioithieu());
                 existingStory.setTacgia(updateStoryRequest.getTacgia());
-                existingStory.setView(updateStoryRequest.getView());
+                existingStory.setThoi_gian_dang(currentTime);
 
                 Story updatedStory = storyRepository.save(existingStory);
 
@@ -152,7 +151,7 @@ public class StoryService {
                     }
                 }
             } else {
-                throw new RuntimeException("Không tìm thấy câu chuyện có ID: " + storyId);
+                throw new RuntimeException("Không tìm thấy truyện có ID: " + storyId);
             }
         } catch (Exception e) {
             System.out.println("error::" + e);
@@ -160,8 +159,5 @@ public class StoryService {
         }
     }
 
-    public List<Category> getCategoriesForStory(Long storyId) {
-        return storyCategoryRepository.findCategoriesByStoryId(storyId);
-    }
 
 }

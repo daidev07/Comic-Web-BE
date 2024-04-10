@@ -1,10 +1,13 @@
 package com.example.comicwebbe.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
+@Data
 @Table (name = "binhluan")
 public class Comment {
 
@@ -18,8 +21,9 @@ public class Comment {
     @JoinColumn(name = "id_truyen")
     private Story story;
     private String noidung;
+    private LocalDateTime thoi_gian_dang;
 
-    public Comment(User user, Story story, String noidung, LocalDate thoi_gian_dang) {
+    public Comment(User user, Story story, String noidung, LocalDateTime thoi_gian_dang) {
         this.user = user;
         this.story = story;
         this.noidung = noidung;
@@ -27,47 +31,5 @@ public class Comment {
     }
 
     public Comment() {
-    }
-
-    private LocalDate thoi_gian_dang;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Story getTruyen() {
-        return story;
-    }
-
-    public void setTruyen(Story story) {
-        this.story = story;
-    }
-
-    public String getNoidung() {
-        return noidung;
-    }
-
-    public void setNoidung(String noidung) {
-        this.noidung = noidung;
-    }
-
-    public LocalDate getThoi_gian_dang() {
-        return thoi_gian_dang;
-    }
-
-    public void setThoi_gian_dang(LocalDate thoi_gian_dang) {
-        this.thoi_gian_dang = thoi_gian_dang;
     }
 }

@@ -50,8 +50,9 @@ public class ChapterService {
             MultipartFile noidung = addChapterRequest.getNoidung();
             String noidunganh = noidung.getOriginalFilename();
 
-            String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-            String timeNameImg = currentTime + "_" + noidunganh;
+            LocalDateTime currentTime = LocalDateTime.now();
+            String timeNameImg = currentTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + "_" + noidunganh;
+
             try {
                 Path uploadPath = Paths.get("src", "main", "resources", "uploads");
                 if (!Files.exists(uploadPath)) {
@@ -62,17 +63,13 @@ public class ChapterService {
             } catch (IOException e) {
                 throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
             }
-            System.out.println("CHẠY TỚI ĐÂY CHƯA???");
 
             // Tìm câu chuyện dựa trên id_truyen từ AddChapterRequest
             Optional<Story> storyOptional = storyRepository.findById(storyId);
             if (storyOptional.isPresent()) {
-                Chapter chapter = new Chapter();
-                chapter.setSo(addChapterRequest.getSo());
-                chapter.setTen(addChapterRequest.getTen());
-                chapter.setNoidung(timeNameImg);
-                // Gán story cho chương
-                chapter.setStory(storyOptional.get());
+                Chapter chapter = new Chapter(addChapterRequest.getSo(), addChapterRequest.getTen(), timeNameImg,
+                        storyOptional.get(), currentTime);
+
                 // Lưu chương mới vào cơ sở dữ liệu
                 chapterRepository.save(chapter);
             } else {
@@ -84,7 +81,6 @@ public class ChapterService {
     }
 
     ////////////////////////////   XÓA CHAPTER
-
     @Transactional
     public ResponseEntity<String> deleteChapter(Long chapterId) {
         try {
@@ -109,8 +105,8 @@ public class ChapterService {
                 MultipartFile noidung = updateChapterRequest.getNoidung();
                 String noidunganh = noidung.getOriginalFilename();
 
-                String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-                String timeNameImg = currentTime + "_" + noidunganh;
+                LocalDateTime currentTime = LocalDateTime.now();
+                String timeNameImg = currentTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + "_" + noidunganh;
 
                 try {
                     Path uploadPath = Paths.get("src", "main", "resources", "uploads");
@@ -127,6 +123,7 @@ public class ChapterService {
                 existingChapter.setSo(updateChapterRequest.getSo());
                 existingChapter.setTen(updateChapterRequest.getTen());
                 existingChapter.setNoidung(timeNameImg);
+                existingChapter.setThoi_gian_dang(currentTime);
 
                 chapterRepository.save(existingChapter);
             } else {

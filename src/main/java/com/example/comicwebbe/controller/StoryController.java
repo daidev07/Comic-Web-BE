@@ -21,16 +21,12 @@ import java.util.Optional;
 public class StoryController {
     @Autowired
     private StoryService storyService;
-    @Autowired
-    private StoryCategoryService storyCategoryService;
-    @Autowired
-    private ChapterService chapterService;
 
     @GetMapping("")
     public ResponseEntity<List<Story>> getAllTruyen(){
         try{
             List<Story> list = storyService.getAllTruyen();
-                return ResponseEntity.ok(list);
+            return ResponseEntity.ok(list);
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
@@ -66,9 +62,9 @@ public class StoryController {
         }
     }
     @DeleteMapping("/remove/{id}")
-    public ResponseEntity<String> deleteStoryAndRelatedCategories(@PathVariable Long id) {
+    public ResponseEntity<String> deleteStory(@PathVariable Long id) {
         try {
-            storyService.deleteStoryAndRelatedCategories(id);
+            storyService.deleteStory(id);
             return ResponseEntity.ok("Xóa thành công");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);

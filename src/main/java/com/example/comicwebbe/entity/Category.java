@@ -1,8 +1,10 @@
 package com.example.comicwebbe.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
 @Table (name = "theloai")
 public class Category {
     @Id
@@ -15,23 +17,6 @@ public class Category {
         this.id = id;
     }
 
-    public Category() {
+    public Category() {}
 
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTen() {
-        return ten;
-    }
-
-    public void setTen(String ten) {
-        this.ten = ten;
-    }
 }
