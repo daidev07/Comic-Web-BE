@@ -25,6 +25,11 @@ public class Story {
     @JsonIgnoreProperties("story")
     private List<Chapter> chapters;
 
+//    @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//    @JsonIgnoreProperties("story")
+//    private List<History> histories;
+
+
     public Story(String ten, String avt, String gioithieu, String tacgia, LocalDateTime thoi_gian_dang) {
         this.ten = ten;
         this.avt = avt;

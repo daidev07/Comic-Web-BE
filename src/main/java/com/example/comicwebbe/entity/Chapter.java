@@ -18,6 +18,7 @@ public class Chapter {
     private String ten;
     private String noidung;
     private LocalDateTime thoi_gian_dang;
+    private Integer view;
     @ManyToOne
     @JoinColumn(name = "id_truyen")
     private Story story;
@@ -30,5 +31,16 @@ public class Chapter {
         this.thoi_gian_dang = thoi_gian_dang;
     }
     public Chapter() {
+    }
+
+    public Chapter(Long chapterId) {
+    }
+
+    public void increaseView() {
+        if (this.view == null) {
+            this.view = 1;
+        } else {
+            this.view++;
+        }
     }
 }

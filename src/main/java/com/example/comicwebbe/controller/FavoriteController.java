@@ -34,10 +34,14 @@ public class FavoriteController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<Story>> getListFavoriteStoryByUserId(@PathVariable Long userId){
+    public ResponseEntity<?> getListFavoriteStoryByUserId(@PathVariable Long userId){
         try{
             List<Story> list = favoriteService.getListFavoriteStoryByUserId(userId);
-            return ResponseEntity.ok(list);
+            if(!list.isEmpty()){
+                return ResponseEntity.ok(list);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Bạn chưa yêu thích bộ truyện nào!");
+            }
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }

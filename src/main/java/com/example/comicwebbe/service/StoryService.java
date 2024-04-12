@@ -2,10 +2,7 @@ package com.example.comicwebbe.service;
 
 import com.example.comicwebbe.dto.UpdateStoryRequest;
 import com.example.comicwebbe.dto.AddStoryRequest;
-import com.example.comicwebbe.entity.Category;
-import com.example.comicwebbe.entity.Chapter;
-import com.example.comicwebbe.entity.Story;
-import com.example.comicwebbe.entity.StoryCategory;
+import com.example.comicwebbe.entity.*;
 import com.example.comicwebbe.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +38,16 @@ public class StoryService {
     private ChapterRepository chapterRepository;
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private HistoryRepository historyRepository;
 
     public List<Story> getAllTruyen() {
         List<Story> stories = storyRepository.findAll();
         for (Story story : stories) {
             List<Chapter> chapters = chapterRepository.findListByStoryId(story.getId());
             story.setChapters(chapters);
+//            List<History> histories = historyRepository.findListHistoriesByStoryId(story.getId());
+//            story.setHistories(histories);
         }
         return stories;
     }
