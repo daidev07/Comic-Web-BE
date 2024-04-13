@@ -6,6 +6,7 @@ import com.example.comicwebbe.dto.UserHistoryRequest;
 import com.example.comicwebbe.entity.*;
 import com.example.comicwebbe.repository.ChapterRepository;
 import com.example.comicwebbe.repository.HistoryRepository;
+import com.example.comicwebbe.repository.StoryRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,8 @@ public class HistoryService {
     @Autowired
     private HistoryRepository historyRepository;
     @Autowired
+    private StoryRepository storyRepository;
+    @Autowired
     private ChapterRepository chapterRepository;
     public void deleteById(Long id){
         historyRepository.deleteById(id);
@@ -38,6 +41,20 @@ public class HistoryService {
     public List<Story> getListReadStoryByUserId(Long userId) {
         return historyRepository.getListReadStoryByUserId(userId);
     }
+
+
+    public List<History> findListHistoriesByUserId(Long userId) {
+        return historyRepository.findListHistoriesByUserId(userId);
+    }
+
+//    public List<History> getListHistoryByUserId(Long userId) {
+//        List<History> histories = historyRepository.findAll();
+//        for (History history : histories){
+//            List<Story> stories = storyRepository.findListStoryByUserId(history.getId());
+//            history.setStory(stories);
+//        }
+//            return histories;
+//    }
 
     public List<Chapter> getListReadChapterByUserIdAndStoryId(Long userId, Long storyId) {
         return historyRepository.getListReadChapterByUserIdAndStoryId(userId, storyId);
@@ -59,7 +76,6 @@ public class HistoryService {
         List<History> existingHistories = historyRepository.findByUserIdAndStoryIdAndChapterId(userId, storyId, chapterId);
 
         if (!existingHistories.isEmpty()) {
-            // Nếu có, cập nhật thời gian lần cuối đọc của bản ghi đó
             for (History history : existingHistories) {
                 history.setLan_cuoi_doc(currentTime);
                 historyRepository.save(history);

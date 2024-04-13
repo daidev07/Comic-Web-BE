@@ -5,6 +5,7 @@ import com.example.comicwebbe.dto.UpdateUserHistoryRequest;
 import com.example.comicwebbe.dto.UserFavoriteRequest;
 import com.example.comicwebbe.dto.UserHistoryRequest;
 import com.example.comicwebbe.entity.Chapter;
+import com.example.comicwebbe.entity.Comment;
 import com.example.comicwebbe.entity.History;
 import com.example.comicwebbe.entity.Story;
 import com.example.comicwebbe.service.HistoryService;
@@ -37,6 +38,11 @@ public class HistoryController {
         }
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<History>> findListHistoriesByUserId(@PathVariable Long userId) {
+        List<History> histories = historyService.findListHistoriesByUserId(userId);
+        return new ResponseEntity<>(histories, HttpStatus.OK);
+    }
 
     @GetMapping("/get/{userId}/{storyId}")
     public ResponseEntity<List<Chapter>> getListReadChapterByUserIdAndStoryId(@PathVariable Long userId, @PathVariable Long storyId){

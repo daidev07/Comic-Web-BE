@@ -14,8 +14,10 @@ import java.util.Optional;
 @Repository
 public interface HistoryRepository extends CrudRepository<History, Long> {
 
-    @Query("SELECT c FROM History c WHERE c.story.id = :storyId")
-    List<History> findListHistoriesByStoryId(@Param("storyId") Long storyid);
+    List<History> findAll();
+
+    @Query("SELECT c FROM History c WHERE c.user.id = :userId")
+    List<History> findListHistoriesByUserId(@Param("userId") Long userId);
 
     @Query("SELECT h.story FROM History h WHERE h.user.id = :userId")
     List<Story> getListReadStoryByUserId(Long userId);
