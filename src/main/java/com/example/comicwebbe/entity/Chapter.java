@@ -23,12 +23,13 @@ public class Chapter {
     @JoinColumn(name = "id_truyen")
     private Story story;
 
-    public Chapter(Long so, String ten, String noidung, Story story, LocalDateTime thoi_gian_dang) {
+    public Chapter(Long so, String ten, String noidung, Story story, LocalDateTime thoi_gian_dang, Integer view) {
         this.so = so;
         this.ten = ten;
         this.noidung = noidung;
         this.story = story;
         this.thoi_gian_dang = thoi_gian_dang;
+        this.view = view;
     }
     public Chapter() {
     }
@@ -36,11 +37,4 @@ public class Chapter {
     public Chapter(Long chapterId) {
     }
 
-    public void increaseView() {
-        if (this.view == null) {
-            this.view = 1;
-        } else {
-            this.view++;
-        }
-    }
 }

@@ -84,9 +84,6 @@ public class HistoryService {
             History history = new History(user, story, chapter, currentTime);
             historyRepository.save(history);
         }
-
-        chapter.increaseView();
-        chapterRepository.save(chapter);
     }
 
 

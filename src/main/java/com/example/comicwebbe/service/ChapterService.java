@@ -57,7 +57,7 @@ public class ChapterService {
             Optional<Story> storyOptional = storyRepository.findById(storyId);
             if (storyOptional.isPresent()) {
                 Chapter chapter = new Chapter(addChapterRequest.getSo(), addChapterRequest.getTen(), timeNameImg,
-                        storyOptional.get(), currentTime);
+                        storyOptional.get(), currentTime, 0);
 
                 chapterRepository.save(chapter);
             } else {
@@ -105,6 +105,22 @@ public class ChapterService {
         } catch (Exception e) {
             System.out.println("error::" + e);
             throw new RuntimeException(e);
+        }
+    }
+
+    @Transactional
+    public void increaseChapterView(Long chapterId) {
+        try {
+            Optional<Chapter> chapterOptional = chapterRepository.findById(chapterId);
+            if (chapterOptional.isPresent()) {
+                Chapter chapter = chapterOptional.get();
+                chapter.setView(chapter.getView() + 1);
+                chapterRepository.save(chapter);
+            } else {
+                throw new RuntimeException("Không tìm thấy chương có ID: " + chapterId);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi tăng số lượt xem cho chương: " + e.getMessage());
         }
     }
 

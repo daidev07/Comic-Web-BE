@@ -74,4 +74,13 @@ public class ChapterController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+    @PutMapping("/increase-view/{chapterId}")
+    public ResponseEntity<String> increaseChapterView(@PathVariable Long chapterId) {
+        try {
+            chapterService.increaseChapterView(chapterId);
+            return ResponseEntity.ok("Đã tăng số lượt xem cho chương");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi tăng số lượt xem cho chương: " + e.getMessage());
+        }
+    }
 }

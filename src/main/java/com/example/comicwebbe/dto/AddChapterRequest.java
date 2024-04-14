@@ -11,4 +11,5 @@ public class AddChapterRequest {
     private String ten;
     private MultipartFile noidung;
     private Long id_truyen;
+    private Integer view;
 }
