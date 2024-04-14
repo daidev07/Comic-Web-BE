@@ -23,7 +23,6 @@ public class HistoryController {
     @Autowired
     private HistoryService historyService;
 
-
     @GetMapping("/get/{userId}")
     public ResponseEntity<?> getListReadStoryByUserId(@PathVariable Long userId) {
         try {

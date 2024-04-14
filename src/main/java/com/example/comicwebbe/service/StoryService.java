@@ -6,6 +6,7 @@ import com.example.comicwebbe.entity.*;
 import com.example.comicwebbe.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -40,24 +42,27 @@ public class StoryService {
     private CommentRepository commentRepository;
     @Autowired
     private HistoryRepository historyRepository;
+    @Autowired
+    private FavoriteRepository favoriteRepository;
 
     public List<Story> getAllTruyen() {
         List<Story> stories = storyRepository.findAll();
         for (Story story : stories) {
             List<Chapter> chapters = chapterRepository.findListByStoryId(story.getId());
             story.setChapters(chapters);
-//            List<History> histories = historyRepository.findListHistoriesByStoryId(story.getId());
-//            story.setHistories(histories);
         }
         return stories;
     }
 
     @Transactional
     public void deleteStory(Long storyId) {
+        historyRepository.deleteHistoriesByStoryId(storyId);
         chapterRepository.deleteChapterByStoryId(storyId);
         storyCategoryRepository.deleteStoryCategoryByStoryId(storyId);
-        storyRepository.deleteById(storyId);
         commentRepository.deleteCommentsByStoryId(storyId);
+        favoriteRepository.deleteFavoritesByStoryId(storyId);
+        storyRepository.deleteById(storyId);
+
     }
 
     public Optional<Story> findById(Long id) {
@@ -70,24 +75,11 @@ public class StoryService {
 
     //CRUD Story
     public void addStory(AddStoryRequest addStoryRequest) {
-        MultipartFile avtFile = addStoryRequest.getAvtFile();
-        String avtFileName = avtFile.getOriginalFilename();
 
         LocalDateTime currentTime = LocalDateTime.now();
-        String timeNameImg = currentTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + "_" + avtFileName;
 
-        try {
-            Path uploadPath = Paths.get("src", "main", "resources", "uploads");
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            // Sao chép dữ liệu từ InputStream của MultipartFile vào tập tin trên đĩa
-            Files.copy(avtFile.getInputStream(), uploadPath.resolve(timeNameImg), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
-        }
-
-        Story story = new Story(addStoryRequest.getTen(), timeNameImg, addStoryRequest.getGioithieu(),
+        String avtImageUrl = saveImage(addStoryRequest.getAvtFile());
+        Story story = new Story(addStoryRequest.getTen(), avtImageUrl, addStoryRequest.getGioithieu(),
                 addStoryRequest.getTacgia(), currentTime);
 
         Story newStory = storyRepository.save(story);
@@ -115,25 +107,10 @@ public class StoryService {
                 // Xóa các thể loại story cũ
                 storyCategoryRepository.deleteStoryCategoryByStoryId(storyId);
 
-                MultipartFile avtFile = updateStoryRequest.getAvtFile();
-                String avtFileName = avtFile.getOriginalFilename();
-
                 LocalDateTime currentTime = LocalDateTime.now();
-                String timeNameImg = currentTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + "_" + avtFileName;
+                String avtImageUrl = saveImage(updateStoryRequest.getAvtFile());
 
-                try {
-                    Path uploadPath = Paths.get("src", "main", "resources", "uploads");
-                    // Tạo thư mục uploads nếu nó chưa tồn tại
-                    if (!Files.exists(uploadPath)) {
-                        Files.createDirectories(uploadPath);
-                    }
-                    // Sao chép dữ liệu từ InputStream của MultipartFile vào tập tin trên đĩa
-                    Files.copy(avtFile.getInputStream(), uploadPath.resolve(timeNameImg), StandardCopyOption.REPLACE_EXISTING);// Xác định đường dẫn của thư mục uploads
-                } catch (IOException e) {
-                    throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
-                }
-
-                existingStory.setAvt(avtFileName);
+                existingStory.setAvt(avtImageUrl);
                 existingStory.setTen(updateStoryRequest.getTen());
                 existingStory.setGioithieu(updateStoryRequest.getGioithieu());
                 existingStory.setTacgia(updateStoryRequest.getTacgia());
@@ -160,5 +137,26 @@ public class StoryService {
         }
     }
 
+    public String saveImage(MultipartFile image) {
+        try {
+            String uploadDir = "uploads/";
+
+            String uniqueFileName = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
+
+            Path uploadPath = Paths.get(uploadDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            // Lưu ảnh vào thư mục
+            Path filePath = uploadPath.resolve(uniqueFileName);
+            Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            // Trả về URL của ảnh đã lưu
+            return uniqueFileName;
+        } catch (IOException e) {
+            throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
+        }
+    }
 
 }

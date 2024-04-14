@@ -18,21 +18,20 @@ public class History {
 
     @ManyToOne
     @JoinColumn(name = "id_user")
+    @JsonIgnoreProperties("user")
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "id_truyen")
+    @JsonIgnoreProperties("story")
     private Story story;
 
     @ManyToOne
     @JoinColumn(name = "id_chuong")
+    @JsonIgnoreProperties("chapter")
     private Chapter chapter;
 
     private LocalDateTime lan_cuoi_doc;
-
-//    @OneToMany(mappedBy = "lichsu", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    @JsonIgnoreProperties("lichsu")
-//    private List<Story> stories;
 
 
     public History(User user, Story story, Chapter chapter, LocalDateTime lan_cuoi_doc) {

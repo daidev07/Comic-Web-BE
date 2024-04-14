@@ -12,6 +12,7 @@ import com.example.comicwebbe.repository.ChapterRepository;
 import com.example.comicwebbe.repository.StoryRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -48,22 +50,8 @@ public class ChapterService {
     @Transactional
     public void addChapter(Long storyId, AddChapterRequest addChapterRequest) {
         try {
-            MultipartFile noidung = addChapterRequest.getNoidung();
-            String noidunganh = noidung.getOriginalFilename();
-
             LocalDateTime currentTime = LocalDateTime.now();
-            String timeNameImg = currentTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + "_" + noidunganh;
-
-            try {
-                Path uploadPath = Paths.get("src", "main", "resources", "uploads");
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
-                // Sao chép dữ liệu từ InputStream của MultipartFile vào tập tin trên đĩa
-                Files.copy(noidung.getInputStream(), uploadPath.resolve(timeNameImg), StandardCopyOption.REPLACE_EXISTING);// Xác định đường dẫn của thư mục uploads
-            } catch (IOException e) {
-                throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
-            }
+            String timeNameImg = saveImage(addChapterRequest.getNoidung());
 
             // Tìm câu chuyện dựa trên id_truyen từ AddChapterRequest
             Optional<Story> storyOptional = storyRepository.findById(storyId);
@@ -71,7 +59,6 @@ public class ChapterService {
                 Chapter chapter = new Chapter(addChapterRequest.getSo(), addChapterRequest.getTen(), timeNameImg,
                         storyOptional.get(), currentTime);
 
-                // Lưu chương mới vào cơ sở dữ liệu
                 chapterRepository.save(chapter);
             } else {
                 throw new RuntimeException("Không tìm thấy câu chuyện với id: " + addChapterRequest.getId_truyen());
@@ -103,23 +90,8 @@ public class ChapterService {
             if (existingChapterOptional.isPresent()) {
                 Chapter existingChapter = existingChapterOptional.get();
 
-                MultipartFile noidung = updateChapterRequest.getNoidung();
-                String noidunganh = noidung.getOriginalFilename();
-
                 LocalDateTime currentTime = LocalDateTime.now();
-                String timeNameImg = currentTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + "_" + noidunganh;
-
-                try {
-                    Path uploadPath = Paths.get("src", "main", "resources", "uploads");
-                    // Tạo thư mục uploads nếu nó chưa tồn tại
-                    if (!Files.exists(uploadPath)) {
-                        Files.createDirectories(uploadPath);
-                    }
-                    // Sao chép dữ liệu từ InputStream của MultipartFile vào tập tin trên đĩa
-                    Files.copy(noidung.getInputStream(), uploadPath.resolve(timeNameImg), StandardCopyOption.REPLACE_EXISTING);// Xác định đường dẫn của thư mục uploads
-                } catch (IOException e) {
-                    throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
-                }
+                String timeNameImg = saveImage(updateChapterRequest.getNoidung());
 
                 existingChapter.setSo(updateChapterRequest.getSo());
                 existingChapter.setTen(updateChapterRequest.getTen());
@@ -133,6 +105,26 @@ public class ChapterService {
         } catch (Exception e) {
             System.out.println("error::" + e);
             throw new RuntimeException(e);
+        }
+    }
+
+    public String saveImage(MultipartFile image) {
+        try {
+            // Thư mục lưu trữ ảnh
+            String uploadDir = "static/images/";
+            // Tạo tên file duy nhất
+            String uniqueFileName = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
+            Path uploadPath = Paths.get(uploadDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+            // Lưu ảnh vào thư mục
+            Path filePath = uploadPath.resolve(uniqueFileName);
+            Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            // Trả về URL của ảnh đã lưu
+            return "/images/" + uniqueFileName;
+        } catch (IOException e) {
+            throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
         }
     }
 }
