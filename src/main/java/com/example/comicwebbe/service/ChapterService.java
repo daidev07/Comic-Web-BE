@@ -110,19 +110,21 @@ public class ChapterService {
 
     public String saveImage(MultipartFile image) {
         try {
-            // Thư mục lưu trữ ảnh
-            String uploadDir = "static/images/";
-            // Tạo tên file duy nhất
+            String uploadDir = "uploads/";
+
             String uniqueFileName = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
+
             Path uploadPath = Paths.get(uploadDir);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
+
             // Lưu ảnh vào thư mục
             Path filePath = uploadPath.resolve(uniqueFileName);
             Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
             // Trả về URL của ảnh đã lưu
-            return "/images/" + uniqueFileName;
+            return uniqueFileName;
         } catch (IOException e) {
             throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
         }
