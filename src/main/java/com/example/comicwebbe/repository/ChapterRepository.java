@@ -12,14 +12,13 @@ import java.util.Optional;
 @Repository
 public interface ChapterRepository extends CrudRepository<Chapter, Long> {
     @Query("SELECT c FROM Chapter c WHERE c.story.id = :storyId")
-    List<Chapter> findListByStoryId(@Param("storyId") Long storyid);
-    Optional<Chapter> findById(Long chapterId);
+    List<Chapter> findListChaptersByStoryId(@Param("storyId") Long storyid);
     @Modifying
     @Query("DELETE FROM Chapter c WHERE c.id = :chapterId")
-    void deleteChapterByStoryIdAndChapterId(Long chapterId);
+    void deleteChapterByChapterId(Long chapterId);
 
     @Modifying
     @Query("DELETE FROM Chapter c WHERE c.story.id = :storyId ")
-    void deleteChapterByStoryId(Long storyId);
+    void deleteChaptersByStoryId(Long storyId);
 
 }

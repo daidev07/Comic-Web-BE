@@ -33,4 +33,31 @@ public class CommentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+    @GetMapping("/get/{commentId}")
+    public ResponseEntity<Comment> getCommentById(@PathVariable Long commentId){
+        try {
+            Optional<Comment> commentOptional = commentService.findById(commentId);
+            if(commentOptional.isPresent()){
+                return ResponseEntity.ok(commentOptional.get());
+            }
+            else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @DeleteMapping("/remove/{commentId}")
+    public ResponseEntity<String> deleteCommentByCommentId(@PathVariable Long commentId){
+        try {
+            commentService.deleteCommentByCommentId(commentId);
+            return ResponseEntity.ok("Deleted success");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Undefined Error...");
+        }
+    }
 }

@@ -23,12 +23,10 @@ public class ChapterController {
     @GetMapping("/{storyId}")
     public ResponseEntity<List<Chapter>> getChaptersByStoryId(@PathVariable Long storyId) {
         try {
-            // Gọi phương thức findListByStoryId trong ChapterService để lấy danh sách Chapter dựa trên ID của bộ truyện
             List<Chapter> chapters = chapterService.findListByStoryId(storyId);
-            return ResponseEntity.ok(chapters); // Trả về danh sách Chapter nếu tồn tại
-
+            return ResponseEntity.ok(chapters);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Xử lý lỗi nếu có
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
     @GetMapping("/get/{chapterId}")

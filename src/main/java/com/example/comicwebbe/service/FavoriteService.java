@@ -23,8 +23,8 @@ public class FavoriteService {
     }
 
     @Transactional
-    public void deleteOneUserIdAndStoryId(Long userId, Long storyId){
-        favoriteRepository.deleteOneUserIdAndStoryId(userId, storyId);
+    public void deleteFavoriteByUserIdAndStoryId(Long userId, Long storyId){
+        favoriteRepository.deleteFavoriteByUserIdAndStoryId(userId, storyId);
     }
     public void deleteById(Long id) {
         favoriteRepository.deleteById(id);

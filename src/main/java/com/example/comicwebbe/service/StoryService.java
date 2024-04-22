@@ -48,7 +48,7 @@ public class StoryService {
     public List<Story> getAllTruyen() {
         List<Story> stories = storyRepository.findAll();
         for (Story story : stories) {
-            List<Chapter> chapters = chapterRepository.findListByStoryId(story.getId());
+            List<Chapter> chapters = chapterRepository.findListChaptersByStoryId(story.getId());
             story.setChapters(chapters);
         }
         return stories;
@@ -57,7 +57,7 @@ public class StoryService {
     @Transactional
     public void deleteStory(Long storyId) {
         historyRepository.deleteHistoriesByStoryId(storyId);
-        chapterRepository.deleteChapterByStoryId(storyId);
+        chapterRepository.deleteChaptersByStoryId(storyId);
         storyCategoryRepository.deleteStoryCategoryByStoryId(storyId);
         commentRepository.deleteCommentsByStoryId(storyId);
         favoriteRepository.deleteFavoritesByStoryId(storyId);

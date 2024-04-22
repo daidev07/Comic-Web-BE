@@ -47,15 +47,6 @@ public class HistoryService {
         return historyRepository.findListHistoriesByUserId(userId);
     }
 
-//    public List<History> getListHistoryByUserId(Long userId) {
-//        List<History> histories = historyRepository.findAll();
-//        for (History history : histories){
-//            List<Story> stories = storyRepository.findListStoryByUserId(history.getId());
-//            history.setStory(stories);
-//        }
-//            return histories;
-//    }
-
     public List<Chapter> getListReadChapterByUserIdAndStoryId(Long userId, Long storyId) {
         return historyRepository.getListReadChapterByUserIdAndStoryId(userId, storyId);
     }

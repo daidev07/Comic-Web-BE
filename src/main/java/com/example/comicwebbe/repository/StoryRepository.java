@@ -14,11 +14,8 @@ import java.util.Optional;
 
 @Repository
 public interface StoryRepository extends CrudRepository<Story, Long> {
-
     List<Story> findAll();
     Optional<Story> findById(Long id);
     void deleteById(Long id);
-
-
 
 }

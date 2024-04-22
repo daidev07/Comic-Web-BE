@@ -11,14 +11,16 @@ import java.util.Optional;
 
 @Repository
 public interface CommentRepository extends CrudRepository<Comment, Long> {
-    Optional<Comment> findById(Long id);
-    void deleteById(Long id);
 
     @Query("SELECT c FROM Comment c  WHERE c.story.id = :storyId")
-    List<Comment> findListByStoryId(Long storyId);
+    List<Comment> findListCommentsByStoryId(Long storyId);
+
     @Modifying
     @Query("DELETE FROM Comment c WHERE c.story.id = :storyId")
     void deleteCommentsByStoryId(Long storyId);
 
+    @Modifying
+    @Query("DELETE FROM Comment c WHERE c.id = :commentId")
+    void deleteCommentByCommentId(Long commentId);
 }
 

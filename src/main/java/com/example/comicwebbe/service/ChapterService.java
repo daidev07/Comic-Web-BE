@@ -39,7 +39,7 @@ public class ChapterService {
     private StoryRepository storyRepository;
 
     public List<Chapter> findListByStoryId(Long storyId) {
-        return chapterRepository.findListByStoryId(storyId);
+        return chapterRepository.findListChaptersByStoryId(storyId);
     }
 
     public Optional<Chapter> findById(Long chapterId) {
@@ -53,7 +53,6 @@ public class ChapterService {
             LocalDateTime currentTime = LocalDateTime.now();
             String timeNameImg = saveImage(addChapterRequest.getNoidung());
 
-            // Tìm câu chuyện dựa trên id_truyen từ AddChapterRequest
             Optional<Story> storyOptional = storyRepository.findById(storyId);
             if (storyOptional.isPresent()) {
                 Chapter chapter = new Chapter(addChapterRequest.getSo(), addChapterRequest.getTen(), timeNameImg,
@@ -61,10 +60,10 @@ public class ChapterService {
 
                 chapterRepository.save(chapter);
             } else {
-                throw new RuntimeException("Không tìm thấy câu chuyện với id: " + addChapterRequest.getId_truyen());
+                throw new RuntimeException("Not found story with id:: " + addChapterRequest.getId_truyen());
             }
         } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi thêm chương mới: " + e.getMessage());
+            throw new RuntimeException("Error add new story:: " + e.getMessage());
         }
     }
 
@@ -72,12 +71,12 @@ public class ChapterService {
     @Transactional
     public ResponseEntity<String> deleteChapter(Long chapterId) {
         try {
-            chapterRepository.deleteChapterByStoryIdAndChapterId(chapterId);
-            return ResponseEntity.ok("Xóa thành công");
+            chapterRepository.deleteChapterByChapterId(chapterId);
+            return ResponseEntity.ok("Deleted Success");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi không xác định");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Undefined Error");
         }
     }
 
@@ -100,7 +99,7 @@ public class ChapterService {
 
                 chapterRepository.save(existingChapter);
             } else {
-                throw new RuntimeException("Không tìm thấy chương có ID: " + chapterId);
+                throw new RuntimeException("Not found chapter with ID: " + chapterId);
             }
         } catch (Exception e) {
             System.out.println("error::" + e);
@@ -117,10 +116,10 @@ public class ChapterService {
                 chapter.setView(chapter.getView() + 1);
                 chapterRepository.save(chapter);
             } else {
-                throw new RuntimeException("Không tìm thấy chương có ID: " + chapterId);
+                throw new RuntimeException("Not found chapter with ID: " + chapterId);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi tăng số lượt xem cho chương: " + e.getMessage());
+            throw new RuntimeException("Error Increase View for Chapter: " + e.getMessage());
         }
     }
 
@@ -142,7 +141,7 @@ public class ChapterService {
             // Trả về URL của ảnh đã lưu
             return uniqueFileName;
         } catch (IOException e) {
-            throw new RuntimeException("Lỗi khi lưu trữ tệp ảnh: " + e.getMessage());
+            throw new RuntimeException("Error save file:: " + e.getMessage());
         }
     }
 }

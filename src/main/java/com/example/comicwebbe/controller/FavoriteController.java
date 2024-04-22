@@ -46,6 +46,7 @@ public class FavoriteController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
     @PostMapping("")
     public ResponseEntity<String> addFavorite(@RequestBody UserFavoriteRequest userFavoriteRequest){
         try{
@@ -59,7 +60,7 @@ public class FavoriteController {
     @DeleteMapping("/{userId}/{storyId}")
     public ResponseEntity<String> deleteOneUserIdAndStoryId(@PathVariable Long userId, @PathVariable Long storyId) {
         try {
-            favoriteService.deleteOneUserIdAndStoryId(userId, storyId);
+            favoriteService.deleteFavoriteByUserIdAndStoryId(userId, storyId);
             return ResponseEntity.ok("Xóa thành công");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
