@@ -21,4 +21,8 @@ public interface LikeCommentRepository extends CrudRepository<LikeComment, Long>
     @Modifying
     @Query("DELETE FROM LikeComment c WHERE c.comment.id = :commentId")
     void deleteListByCommentId(Long commentId);
+
+    @Modifying
+    @Query("DELETE FROM LikeComment lc WHERE lc.comment.id IN (SELECT c.id FROM Comment c WHERE c.story.id IN (SELECT s.id FROM Story s WHERE s.id = :storyId))")
+    void deleteLikeCommentByStoryId(Long storyId);
 }

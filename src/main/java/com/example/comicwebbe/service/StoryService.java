@@ -46,6 +46,8 @@ public class StoryService {
     private FavoriteRepository favoriteRepository;
     @Autowired
     private SlideRepository slideRepository;
+    @Autowired
+    private LikeCommentRepository likeCommentRepository;
 
     public List<Story> getAllTruyen() {
         List<Story> stories = storyRepository.findAll();
@@ -61,6 +63,7 @@ public class StoryService {
         historyRepository.deleteHistoriesByStoryId(storyId);
         chapterRepository.deleteChaptersByStoryId(storyId);
         storyCategoryRepository.deleteStoryCategoryByStoryId(storyId);
+        likeCommentRepository.deleteLikeCommentByStoryId(storyId);
         commentRepository.deleteCommentsByStoryId(storyId);
         favoriteRepository.deleteFavoritesByStoryId(storyId);
         slideRepository.deleteSlideByStoryId(storyId);

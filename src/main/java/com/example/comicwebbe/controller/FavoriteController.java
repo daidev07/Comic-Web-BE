@@ -58,7 +58,7 @@ public class FavoriteController {
     }
 
     @DeleteMapping("/{userId}/{storyId}")
-    public ResponseEntity<String> deleteOneUserIdAndStoryId(@PathVariable Long userId, @PathVariable Long storyId) {
+    public ResponseEntity<String> deleteFavoriteByUserIdAndStoryId(@PathVariable Long userId, @PathVariable Long storyId) {
         try {
             favoriteService.deleteFavoriteByUserIdAndStoryId(userId, storyId);
             return ResponseEntity.ok("Xóa thành công");
