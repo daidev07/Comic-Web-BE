@@ -2,6 +2,8 @@ package com.example.comicwebbe.controller;
 
 import com.example.comicwebbe.dto.AddOneUserRequest;
 import com.example.comicwebbe.dto.LoginUserRequest;
+import com.example.comicwebbe.dto.UpdateStoryRequest;
+import com.example.comicwebbe.dto.UpdateUserRequest;
 import com.example.comicwebbe.entity.User;
 import com.example.comicwebbe.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,18 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
         } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PutMapping("/update/{userId}")
+    public ResponseEntity<User> updateUser(@PathVariable Long userId, @ModelAttribute UpdateUserRequest updateUserRequest){
+        try{
+            User updatedUser = userService.updateUser(userId, updateUserRequest);
+            return ResponseEntity.ok(updatedUser);
+        } catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
